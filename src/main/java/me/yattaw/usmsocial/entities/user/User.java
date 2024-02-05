@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.entities;
+package me.yattaw.usmsocial.entities.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,6 +25,12 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(length = 32)
+    private String firstName;
+
+    @Column(length = 32)
+    private String lastName;
+
     private String email;
 
     @Column(length = 64)
@@ -31,6 +38,8 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private LocalDateTime timestamp;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

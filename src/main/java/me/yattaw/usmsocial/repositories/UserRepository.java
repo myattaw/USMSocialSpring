@@ -1,6 +1,6 @@
 package me.yattaw.usmsocial.repositories;
 
-import me.yattaw.usmsocial.entities.User;
+import me.yattaw.usmsocial.entities.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

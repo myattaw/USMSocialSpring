@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.entities;
+package me.yattaw.usmsocial.entities.user;
 
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

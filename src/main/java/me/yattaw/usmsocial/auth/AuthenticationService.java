@@ -1,15 +1,16 @@
 package me.yattaw.usmsocial.auth;
 
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.entities.Role;
-import me.yattaw.usmsocial.entities.User;
+import me.yattaw.usmsocial.entities.user.Role;
+import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +23,12 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.STUDENT)
+                .timestamp(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);

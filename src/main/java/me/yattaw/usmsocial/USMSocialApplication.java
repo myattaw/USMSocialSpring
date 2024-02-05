@@ -1,7 +1,7 @@
 package me.yattaw.usmsocial;
 
-import me.yattaw.usmsocial.entities.Role;
-import me.yattaw.usmsocial.entities.User;
+import me.yattaw.usmsocial.entities.user.Role;
+import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import org.springframework.boot.CommandLineRunner;
@@ -10,12 +10,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @SpringBootApplication
@@ -46,9 +46,12 @@ public class USMSocialApplication {
 				// Create an admin user on first start up
 				UserDetails userDetails = userRepository.save(
 						User.builder()
+								.firstName("admin")
+								.lastName("admin")
 								.email("admin")
 								.password(encoder.encode("admin"))
 								.role(Role.ADMIN)
+								.timestamp(LocalDateTime.now())
 								.build()
 				);
 				String token = jwtService.generateToken(new HashMap<>(), userDetails);
