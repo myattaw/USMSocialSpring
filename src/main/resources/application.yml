@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring_database
+    username: root
+    password: ${SPRING_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
