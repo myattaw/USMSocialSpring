@@ -1,5 +1,6 @@
 package me.yattaw.usmsocial;
 
+import me.yattaw.usmsocial.entities.Role;
 import me.yattaw.usmsocial.entities.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
@@ -39,7 +40,7 @@ public class USMSocialApplication {
 
 	) {
 		return (args) -> {
-			int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users", Integer.class);
+			int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM usm_social_users", Integer.class);
 			if (rowCount == 0) {// always make sure there is at least 1 user added to the database or create an admin account.
 				System.out.println("Creating new admin account...");
 				// Create an admin user on first start up
@@ -47,6 +48,7 @@ public class USMSocialApplication {
 						User.builder()
 								.email("admin")
 								.password(encoder.encode("admin"))
+								.role(Role.ADMIN)
 								.build()
 				);
 				String token = jwtService.generateToken(new HashMap<>(), userDetails);

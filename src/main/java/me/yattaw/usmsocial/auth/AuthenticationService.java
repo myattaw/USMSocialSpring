@@ -1,6 +1,7 @@
 package me.yattaw.usmsocial.auth;
 
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.entities.Role;
 import me.yattaw.usmsocial.entities.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
@@ -23,6 +24,7 @@ public class AuthenticationService {
         var user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.STUDENT)
                 .build();
 
         userRepository.save(user);

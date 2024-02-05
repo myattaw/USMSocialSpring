@@ -9,13 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
+@Table(name = "usm_social_users")
 public class User implements UserDetails {
 
     @Id
@@ -28,9 +29,12 @@ public class User implements UserDetails {
     @Column(length = 64)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return List.of(role.getSimpleGrantedAuthority());
     }
 
     @Override
