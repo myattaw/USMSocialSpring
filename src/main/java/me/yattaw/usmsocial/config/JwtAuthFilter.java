@@ -1,5 +1,7 @@
 package me.yattaw.usmsocial.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.service.JwtService;
+import me.yattaw.usmsocial.user.UserActionResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,11 +25,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final String AUTH_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
-
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
 
     @Override
     protected void doFilterInternal(
@@ -34,29 +36,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = extractToken(request);
+        String token = jwtService.extractToken(request);
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            String email = jwtService.fetchEmail(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            if (jwtService.isValidToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            try {
+                String email = jwtService.fetchEmail(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                if (jwtService.isValidToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (ExpiredJwtException ex) {
+                // Handle expired token
+                UserActionResponse expiredTokenResponse = UserActionResponse.builder()
+                        .status(0)
+                        .message("User token has expired, please try again.")
+                        .build();
+
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(OBJECT_MAPPER.writeValueAsString(expiredTokenResponse));
+                return;
             }
         }
         filterChain.doFilter(request, response);
-    }
-
-    private String extractToken(HttpServletRequest request) {
-        String authorization = request.getHeader(AUTH_HEADER);
-        if (authorization != null && authorization.startsWith(BEARER_PREFIX)) {
-            return authorization.substring(BEARER_PREFIX.length());
-        }
-        return null;
     }
 
 }

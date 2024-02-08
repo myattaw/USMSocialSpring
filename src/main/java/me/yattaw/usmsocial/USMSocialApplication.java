@@ -37,7 +37,6 @@ public class USMSocialApplication {
 			BCryptPasswordEncoder encoder,
 			JwtService jwtService,
 			UserRepository userRepository
-
 	) {
 		return (args) -> {
 			int rowCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM usm_social_users", Integer.class);

@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.auth;
+package me.yattaw.usmsocial.test;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
