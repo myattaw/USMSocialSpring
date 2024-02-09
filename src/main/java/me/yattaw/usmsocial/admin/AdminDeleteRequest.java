@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminDeleteUserRequest {
+public class AdminDeleteRequest {
 
-    private int userId;
+    private int targetId;
 
 }

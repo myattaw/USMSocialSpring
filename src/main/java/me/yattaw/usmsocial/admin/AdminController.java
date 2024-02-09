@@ -16,9 +16,16 @@ public class AdminController {
 
     @DeleteMapping("/delete_user")
     public ResponseEntity<AdminActionResponse> deleteUser(
-            @RequestBody AdminDeleteUserRequest request
+            @RequestBody AdminDeleteRequest request
     ) {
         return ResponseEntity.ok(service.deleteUser(request));
+    }
+
+    @DeleteMapping("/delete_post")
+    public ResponseEntity<AdminActionResponse> deletePost(
+            @RequestBody AdminDeleteRequest request
+    ) {
+        return ResponseEntity.ok(service.deletePost(request));
     }
 
 }
