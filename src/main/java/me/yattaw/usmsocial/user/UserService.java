@@ -2,9 +2,11 @@ package me.yattaw.usmsocial.user;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.entities.post.PostComment;
 import me.yattaw.usmsocial.entities.post.PostLike;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserPost;
+import me.yattaw.usmsocial.repositories.CommentRepository;
 import me.yattaw.usmsocial.repositories.LikeRepository;
 import me.yattaw.usmsocial.repositories.PostRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
@@ -23,6 +25,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+
 
     private final JwtService jwtService;
 
@@ -56,6 +60,50 @@ public class UserService {
         return UserActionResponse.builder()
                 .status(1)
                 .message("Post has been created successfully!")
+                .build();
+
+    }
+
+    public UserActionResponse createComment(
+            HttpServletRequest servletRequest,
+            UserPostRequest request
+    ) {
+
+        String token = jwtService.extractToken(servletRequest);
+
+        Optional<User> user = userRepository.findByEmail(
+                jwtService.fetchEmail(token)
+        );
+
+        // This should only happen if a user was deleted
+        if (user.isEmpty()) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Unable to authorize the user token.")
+                    .build();
+        }
+
+        Optional<UserPost> userPost = postRepository.findById(request.getId());
+
+        if (userPost.isEmpty()) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Unable to find user post.")
+                    .build();
+        }
+
+        PostComment postComment = PostComment.builder()
+                .post(userPost.get())
+                .user(user.get())
+                .content(request.getContent())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        commentRepository.save(postComment);
+
+        return UserActionResponse.builder()
+                .status(1)
+                .message("Comment has been created successfully!")
                 .build();
 
     }
@@ -132,7 +180,8 @@ public class UserService {
 
         if (userPost.isPresent()) {
             if (userPost.get().getUser().equals(user.get())) {
-                // Delete posts and all likes attached to post
+                // Delete posts and all likes and comments attached to post
+                commentRepository.deleteAll(userPost.get().getComments());
                 likeRepository.deleteAll(userPost.get().getLikes());
                 postRepository.delete(userPost.get());
 

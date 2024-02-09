@@ -25,6 +25,16 @@ public class UserController {
         );
     }
 
+    @PostMapping("/create_comment")
+    public ResponseEntity<UserActionResponse> createComment(
+            @RequestBody UserPostRequest request
+    ) {
+        return ResponseEntity.ok(service.createComment(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                request)
+        );
+    }
+
     @PostMapping("/like_post")
     public ResponseEntity<UserActionResponse> likePost(
             @RequestBody UserRequest request

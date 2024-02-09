@@ -20,7 +20,7 @@ public class PostComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeId;
+    private Long commentId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -30,10 +30,9 @@ public class PostComment {
     @JoinColumn(name = "post_id", nullable = false)
     private UserPost post;
 
-    @Column(length = 280)
+    @Column(length = 140)
     private String content;
 
     private LocalDateTime timestamp;
-
 
 }

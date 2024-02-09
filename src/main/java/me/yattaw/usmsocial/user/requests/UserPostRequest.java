@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserPostRequest {
 
-    String content;
+    private int id;
+    private String content;
 
 }

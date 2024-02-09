@@ -2,14 +2,12 @@ package me.yattaw.usmsocial.entities.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import me.yattaw.usmsocial.entities.post.PostComment;
 import me.yattaw.usmsocial.entities.post.PostLike;
 import me.yattaw.usmsocial.entities.user.User;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -32,10 +30,13 @@ public class UserPost {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private LocalDateTime timestamp;
-
     @OneToMany(mappedBy = "post")
     private Set<PostLike> likes = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostComment> comments = new ArrayList<>();
+
+    private LocalDateTime timestamp;
 
     @Transient
     private int likeCount; // Transient field for dynamic calculation
