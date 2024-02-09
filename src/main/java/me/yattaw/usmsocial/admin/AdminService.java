@@ -3,6 +3,7 @@ package me.yattaw.usmsocial.admin;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserPost;
+import me.yattaw.usmsocial.repositories.LikeRepository;
 import me.yattaw.usmsocial.repositories.PostRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class AdminService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
 
     public AdminActionResponse deleteUser(AdminDeleteRequest request) {
         Optional<User> user = userRepository.findById(request.getTargetId());
@@ -42,7 +44,8 @@ public class AdminService {
         Optional<UserPost> userPost = postRepository.findById(request.getTargetId());
 
         if (userPost.isPresent()) {
-            // Delete or update related posts
+            // Delete posts and all likes attached to post
+            likeRepository.deleteAll(userPost.get().getLikes());
             postRepository.delete(userPost.get());
 
             return AdminActionResponse.builder()

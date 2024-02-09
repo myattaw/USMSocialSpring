@@ -1,7 +1,7 @@
 package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.user.requests.UserDeleteRequest;
+import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.user.requests.UserPostRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +25,20 @@ public class UserController {
         );
     }
 
+    @PostMapping("/like_post")
+    public ResponseEntity<UserActionResponse> likePost(
+            @RequestBody UserRequest request
+    ) {
+        return ResponseEntity.ok(service.likePost(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                request)
+        );
+    }
+
+
     @DeleteMapping("/delete_post")
     public ResponseEntity<UserActionResponse> deletePost(
-            @RequestBody UserDeleteRequest request
+            @RequestBody UserRequest request
     ) {
         return ResponseEntity.ok(service.deletePost(
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),

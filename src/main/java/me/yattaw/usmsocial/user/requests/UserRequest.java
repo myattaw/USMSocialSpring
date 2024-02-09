@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDeleteRequest {
+public class UserRequest {
 
     private int targetId;
 
