@@ -41,16 +41,12 @@ public class AuthenticationService {
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
 
-        try {
-            senderService.sendEmail(
-                    user,
-
-                    "Verify Email Address for USM Social",
-                    "http://localhost:8080/api/v1/verify/" + user.getVerificationToken()
-                    );
-        } catch (MessagingException | TemplateException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        senderService.sendEmail(
+                user,
+                "Verify Email Address for USM Social",
+                "http://localhost:8080/api/v1/verify/" + user.getVerificationToken(),
+                "Verify Account"
+        );
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
