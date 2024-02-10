@@ -1,6 +1,9 @@
 package me.yattaw.usmsocial.auth;
 
+import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.email.EmailSenderService;
 import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
@@ -10,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -20,9 +24,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailSenderService senderService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
+        User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
@@ -31,8 +36,21 @@ public class AuthenticationService {
                 .timestamp(LocalDateTime.now())
                 .build();
 
+        user.generateVerificationToken();
+
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
+
+        try {
+            senderService.sendEmail(
+                    user,
+
+                    "Verify Email Address for USM Social",
+                    "http://localhost:8080/api/v1/verify/" + user.getVerificationToken()
+                    );
+        } catch (MessagingException | TemplateException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -46,8 +64,15 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        if (user.getVerificationToken() != null && user.isVerified()) {
+            // User remembered their password so delete their verification token
+            user.setVerificationToken(null);
+            userRepository.save(user);
+        }
+
+        String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

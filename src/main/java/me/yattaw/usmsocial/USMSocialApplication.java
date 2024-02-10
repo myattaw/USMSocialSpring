@@ -1,5 +1,8 @@
 package me.yattaw.usmsocial;
 
+import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
+import me.yattaw.usmsocial.email.EmailSenderService;
 import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
@@ -7,6 +10,7 @@ import me.yattaw.usmsocial.service.JwtService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -30,6 +35,7 @@ public class USMSocialApplication {
 	}
 
 	private final JwtService jwtService;
+
 
 	@Bean
 	public CommandLineRunner createDefaults(
@@ -53,13 +59,13 @@ public class USMSocialApplication {
 								.timestamp(LocalDateTime.now())
 								.build()
 				);
+
 				String token = jwtService.generateToken(new HashMap<>(), userDetails);
 				System.out.println("admin token: " + token);
 				System.out.println("jwt decode: " + jwtService.fetchClaims(token));
 			}
 		};
 	}
-
 
 	// Bearer token is created for a username/email which should be used when sending
 	// requests to the REST API.

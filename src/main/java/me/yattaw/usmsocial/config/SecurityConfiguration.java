@@ -21,13 +21,19 @@ public class SecurityConfiguration {
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    private static final String[] AUTHORIZED_URLS = {
+            "/api/v1/auth/**",
+            "/api/v1/reset_password/**",
+            "/api/v1/change_password/**",
+            "/api/v1/verify/**",
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/v1/auth/**")
-                                .permitAll()
+                        req.requestMatchers(AUTHORIZED_URLS).permitAll()
                                 .requestMatchers("/api/v1/user/**").hasAnyAuthority(
                                         STUDENT.getAuthority(), ALUMNI.getAuthority(), STAFF.getAuthority(),
                                         FACULTY.getAuthority(), ADMIN.getAuthority()
