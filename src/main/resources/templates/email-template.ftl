@@ -18,7 +18,7 @@
     <tr>
         <td style="padding: 40px 50px;">
             <h2 style="font-size: 20px; color: #4f545c;">Hey ${firstName} ${lastName},</h2>
-            <p style="color: #737f8d;">Thank you for signing up for an account on USM Social! Before we begin, we want to ensure that it's really you. Please click the button below to verify your email address:</p>
+            <p style="color: #737f8d;">${body}</p>
             <a href="${verifyLink}" style="background: #002752; color: #f5a800; padding: 15px 19px; border-radius: 3px; text-decoration: none; font-size: 15px;">${buttonText}</a>
         </td>
     </tr>

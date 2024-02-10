@@ -1,9 +1,7 @@
 package me.yattaw.usmsocial.auth;
 
-import freemarker.template.TemplateException;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.email.EmailSenderService;
+import me.yattaw.usmsocial.service.EmailSenderService;
 import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
@@ -13,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -44,6 +41,10 @@ public class AuthenticationService {
         senderService.sendEmail(
                 user,
                 "Verify Email Address for USM Social",
+                "Thank you for signing up for an account on USM Social! " +
+                        "Before we begin, we want to ensure that it's really you. " +
+                        "Please click the button below to verify your email address:",
+
                 "http://localhost:8080/api/v1/verify/" + user.getVerificationToken(),
                 "Verify Account"
         );

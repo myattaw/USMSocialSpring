@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.email;
+package me.yattaw.usmsocial.service;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -25,7 +25,7 @@ public class EmailSenderService {
     private final Configuration freemarkerConfig;
 
     @Async
-    public void sendEmail(User user, String subject, String verifyLink, String buttonText) {
+    public void sendEmail(User user, String subject, String body, String verifyLink, String buttonText) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -41,6 +41,7 @@ public class EmailSenderService {
             Map<String, Object> model = new HashMap<>();
             model.put("firstName", user.getFirstName());
             model.put("lastName", user.getLastName());
+            model.put("body", body);
             model.put("verifyLink", verifyLink);
             model.put("buttonText", buttonText);
 
