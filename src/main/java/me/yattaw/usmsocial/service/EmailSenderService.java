@@ -41,6 +41,7 @@ public class EmailSenderService {
             Map<String, Object> model = new HashMap<>();
             model.put("firstName", user.getFirstName());
             model.put("lastName", user.getLastName());
+            model.put("subject", subject);
             model.put("body", body);
             model.put("verifyLink", verifyLink);
             model.put("buttonText", buttonText);
