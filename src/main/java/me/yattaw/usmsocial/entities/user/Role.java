@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Getter
 public enum Role {
 
+    GUEST("ROLE_GUEST"),
     STUDENT("ROLE_STUDENT"),
     ALUMNI("ROLE_ALUMNI"),
     STAFF("ROLE_STAFF"),

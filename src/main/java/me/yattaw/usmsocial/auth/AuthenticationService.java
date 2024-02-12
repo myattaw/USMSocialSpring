@@ -29,7 +29,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.STUDENT)
+                .role(Role.GUEST)
                 .timestamp(LocalDateTime.now())
                 .build();
 

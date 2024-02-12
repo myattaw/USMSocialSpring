@@ -2,6 +2,7 @@ package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.auth.RegisterRequest;
+import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.service.EmailSenderService;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
@@ -29,6 +30,7 @@ public class VerificationController {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             // Mark user account as verified
+            user.setRole(Role.STUDENT);
             user.setVerified(true);
             user.setVerificationToken(null);
             userRepository.save(user);
@@ -46,8 +48,8 @@ public class VerificationController {
         if (emailUser.isPresent()) {
             User user = emailUser.get();
             //TODO: Also check if the token verification expired
-            if (user.getVerificationToken().isEmpty()) {
-                user.setVerificationToken(user.getVerificationToken());
+            if (user.getVerificationToken() == null) {
+                user.generateVerificationToken();
                 userRepository.save(user);
                 senderService.sendEmail(
                         user,
@@ -55,7 +57,7 @@ public class VerificationController {
                         "Thank you for using USM Social! To complete the password change process, " +
                                 "please click the link below:",
                         "https://www.google.com/", // Change this url to front end reset password form later
-                        "Verify Account"
+                        "Change Password"
                 );
             }
         }
