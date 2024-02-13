@@ -1,8 +1,10 @@
 package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.user.requests.RecommendedPostResponse;
 import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.user.requests.UserPostRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -33,6 +35,11 @@ public class UserController {
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
                 request)
         );
+    }
+
+    @GetMapping("/recommended_posts")
+    public ResponseEntity<ResponseEntity<Page<RecommendedPostResponse>>> getRecommendedPosts() {
+        return ResponseEntity.ok(service.getRecommendedPosts());
     }
 
     @PostMapping("/like_post")

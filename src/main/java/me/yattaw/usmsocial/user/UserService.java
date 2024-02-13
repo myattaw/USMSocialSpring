@@ -11,8 +11,12 @@ import me.yattaw.usmsocial.repositories.LikeRepository;
 import me.yattaw.usmsocial.repositories.PostRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
+import me.yattaw.usmsocial.user.requests.RecommendedPostResponse;
 import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.user.requests.UserPostRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -106,6 +110,24 @@ public class UserService {
                 .message("Comment has been created successfully!")
                 .build();
 
+    }
+
+    public ResponseEntity<Page<RecommendedPostResponse>> getRecommendedPosts() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<UserPost> posts = postRepository.findAll(pageRequest);
+        return ResponseEntity.ok(posts.map(this::mapToSimplifiedPostResponse));
+    }
+
+    private RecommendedPostResponse mapToSimplifiedPostResponse(UserPost post) {
+        return RecommendedPostResponse.builder()
+                .id(post.getId())
+                .content(post.getContent())
+                .userId(post.getUser().getId())
+                .likes(post.getLikes())
+                .comments(post.getComments())
+                .timestamp(post.getTimestamp())
+                .likeCount(post.getLikeCount())
+                .build();
     }
 
     public UserActionResponse likePost(
