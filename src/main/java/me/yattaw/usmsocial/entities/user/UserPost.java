@@ -31,6 +31,7 @@ public class UserPost {
     private User user;
 
     @OneToMany(mappedBy = "post")
+    @OrderBy("timestamp ASC")
     private Set<PostLike> likes = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

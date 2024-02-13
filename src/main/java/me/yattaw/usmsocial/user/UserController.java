@@ -1,7 +1,7 @@
 package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.user.requests.RecommendedPostResponse;
+import me.yattaw.usmsocial.user.responses.RecommendedPostResponse;
 import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.user.requests.UserPostRequest;
 import org.springframework.data.domain.Page;

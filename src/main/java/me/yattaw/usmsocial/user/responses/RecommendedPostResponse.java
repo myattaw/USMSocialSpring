@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.user.requests;
+package me.yattaw.usmsocial.user.responses;
 
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
@@ -20,9 +20,9 @@ public class RecommendedPostResponse {
 
     private Integer id;
     private String content;
-    private Integer userId;
-    private Set<PostLike> likes;
-    private List<PostComment> comments;
+    private String postersFirstName;
+    private String postersLastName;
+    private List<PostCommentResponse> comments;
     private LocalDateTime timestamp;
     private int likeCount;
 

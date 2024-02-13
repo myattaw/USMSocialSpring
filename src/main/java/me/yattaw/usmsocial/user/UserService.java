@@ -11,16 +11,19 @@ import me.yattaw.usmsocial.repositories.LikeRepository;
 import me.yattaw.usmsocial.repositories.PostRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
-import me.yattaw.usmsocial.user.requests.RecommendedPostResponse;
-import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.user.requests.UserPostRequest;
+import me.yattaw.usmsocial.user.requests.UserRequest;
+import me.yattaw.usmsocial.user.responses.PostCommentResponse;
+import me.yattaw.usmsocial.user.responses.RecommendedPostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -119,14 +122,24 @@ public class UserService {
     }
 
     private RecommendedPostResponse mapToSimplifiedPostResponse(UserPost post) {
+
         return RecommendedPostResponse.builder()
                 .id(post.getId())
                 .content(post.getContent())
-                .userId(post.getUser().getId())
-                .likes(post.getLikes())
-                .comments(post.getComments())
+                .postersFirstName(post.getUser().getFirstName())
+                .postersLastName(post.getUser().getLastName())
+                //TODO: make the code only fetch 10 comments at a time
+                .comments(
+                        post.getComments().stream().map(comment -> PostCommentResponse.builder()
+                                .commentId(comment.getCommentId())
+                                .content(comment.getContent())
+                                .commenterFirstName(comment.getUser().getFirstName())
+                                .commenterLastName(comment.getUser().getLastName())
+                                .timestamp(comment.getTimestamp())
+                                .build()).collect(Collectors.toCollection(() -> new ArrayList<>(post.getComments().size()))
+                        ))
                 .timestamp(post.getTimestamp())
-                .likeCount(post.getLikeCount())
+                .likeCount(postRepository.getLikeCount(post.getId())) // Find a better way of doing this if possible
                 .build();
     }
 
