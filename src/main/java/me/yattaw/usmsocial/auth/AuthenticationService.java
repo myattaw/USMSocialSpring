@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,34 +25,80 @@ public class AuthenticationService {
     private final EmailSenderService senderService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        User user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.GUEST)
-                .timestamp(LocalDateTime.now())
-                .build();
 
-        user.generateVerificationToken();
+        request.setOAuthRegistration(false); // Disable OAuthRegistration for now.
+        if (request.isOAuthRegistration()) {
+            // register with oAuth
+            User user = handleOAuthRegistration(request);
 
-        userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
+            // Continue with the registration process...
+            // (generate verification token, save to the database, generate JWT, send email, etc.)
+            userRepository.save(user);
+            String jwtToken = jwtService.generateToken(user);
 
-        senderService.sendEmail(
-                user,
-                "Verify Email Address for USM Social",
-                "Thank you for signing up for an account on USM Social! " +
-                        "Before we begin, we want to ensure that it's really you. " +
-                        "Please click the button below to verify your email address:",
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        } else {
 
-                "http://localhost:8080/api/v1/verify/" + user.getVerificationToken(),
-                "Verify Account"
-        );
+            User user = User.builder()
+                    .firstName(request.getFirstName())
+                    .lastName(request.getLastName())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.GUEST)
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+            user.generateVerificationToken();
+
+            userRepository.save(user);
+            String jwtToken = jwtService.generateToken(user);
+
+            senderService.sendEmail(
+                    user,
+                    "Verify Email Address for USM Social",
+                    "Thank you for signing up for an account on USM Social! " +
+                            "Before we begin, we want to ensure that it's really you. " +
+                            "Please click the button below to verify your email address:",
+
+                    "http://localhost:8080/api/v1/verify/" + user.getVerificationToken(),
+                    "Verify Account"
+            );
+
+
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+        }
+    }
+
+    private User handleOAuthRegistration(RegisterRequest request) {
+        // Extract user information from the OAuth response
+        String email = request.getEmail(); // or retrieve from OAuth response
+        String firstName = request.getFirstName(); // or retrieve from OAuth response
+        String lastName = request.getLastName(); // or retrieve from OAuth response
+
+        // Check if the user already exists in the database
+        Optional<User> existingUser = userRepository.findByEmail(email);
+
+        if (existingUser.isPresent()) {
+            // Update user information if necessary
+            User user = existingUser.get();
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            // Update other user fields as needed
+            return user;
+        } else {
+            // Create a new user
+            return User.builder()
+                    .email(email)
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .role(Role.GUEST) // Set default role for OAuth users
+                    .timestamp(LocalDateTime.now())
+                    .build();
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
