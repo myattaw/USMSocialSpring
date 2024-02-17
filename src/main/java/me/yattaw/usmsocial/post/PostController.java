@@ -53,7 +53,6 @@ public class PostController {
         );
     }
 
-
     @DeleteMapping("/delete")
     public ResponseEntity<UserActionResponse> deletePost(
             @RequestBody UserRequest request
@@ -63,6 +62,5 @@ public class PostController {
                 request)
         );
     }
-
 
 }

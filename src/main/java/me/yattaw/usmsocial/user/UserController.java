@@ -23,13 +23,19 @@ public class UserController {
     }
 
     @PostMapping("/follow/{id}")
-    public ResponseEntity<String> followUser(@PathVariable String id) {
-        return ResponseEntity.ok("not implemented yet");
+    public ResponseEntity<UserActionResponse> followUser(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.followUser(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                id)
+        );
     }
 
     @DeleteMapping("/unfollow/{id}")
-    public ResponseEntity<String> unfollowUser(@PathVariable String id) {
-        return ResponseEntity.ok("not implemented yet");
+    public ResponseEntity<UserActionResponse> unfollowUser(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.unfollowUser(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                id)
+        );
     }
 
     @PostMapping("/message/{id}")

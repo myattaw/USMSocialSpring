@@ -16,22 +16,15 @@ import java.time.LocalDateTime;
 @Table(name = "usm_social_followers")
 public class UserFollowers {
 
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "follower_id", nullable = false)
-    private User follower;
-
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "following_id", nullable = false)
-    private User following;
+    @EmbeddedId
+    private UserFollowerId id;
 
     private LocalDateTime timestamp;
 
     @PrePersist
     @PreUpdate
     private void validateUsers() {
-        if (follower != null && follower.equals(following)) {
+        if (id != null && id.getFollower() != null && id.getFollower().equals(id.getFollowing())) {
             throw new IllegalStateException("Follower and following users cannot be the same.");
         }
     }
