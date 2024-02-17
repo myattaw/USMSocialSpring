@@ -17,51 +17,24 @@ public class UserController {
 
     private final UserService service;
 
-    @PostMapping("/create_post")
-    public ResponseEntity<UserActionResponse> createPost(
-            @RequestBody UserPostRequest request
-    ) {
-        return ResponseEntity.ok(service.createPost(
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                request)
-        );
+    @PatchMapping("/profile_picture")
+    public ResponseEntity<String> changeProfilePicture( ) {
+        return ResponseEntity.ok("not implemented yet");
     }
 
-    @PostMapping("/create_comment")
-    public ResponseEntity<UserActionResponse> createComment(
-            @RequestBody UserPostRequest request
-    ) {
-        return ResponseEntity.ok(service.createComment(
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                request)
-        );
+    @PostMapping("/follow/{id}")
+    public ResponseEntity<String> followUser(@PathVariable String id) {
+        return ResponseEntity.ok("not implemented yet");
     }
 
-    @GetMapping("/recommended_posts")
-    public ResponseEntity<ResponseEntity<Page<RecommendedPostResponse>>> getRecommendedPosts() {
-        return ResponseEntity.ok(service.getRecommendedPosts());
+    @DeleteMapping("/unfollow/{id}")
+    public ResponseEntity<String> unfollowUser(@PathVariable String id) {
+        return ResponseEntity.ok("not implemented yet");
     }
 
-    @PostMapping("/like_post")
-    public ResponseEntity<UserActionResponse> likePost(
-            @RequestBody UserRequest request
-    ) {
-        return ResponseEntity.ok(service.likePost(
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                request)
-        );
+    @PostMapping("/message/{id}")
+    public ResponseEntity<String> messageUser(@PathVariable String id) {
+        return ResponseEntity.ok("not implemented yet");
     }
-
-
-    @DeleteMapping("/delete_post")
-    public ResponseEntity<UserActionResponse> deletePost(
-            @RequestBody UserRequest request
-    ) {
-        return ResponseEntity.ok(service.deletePost(
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                request)
-        );
-    }
-
 
 }
