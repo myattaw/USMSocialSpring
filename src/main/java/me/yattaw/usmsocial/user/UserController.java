@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -14,10 +17,10 @@ public class UserController {
     private final UserService service;
 
     @PatchMapping("/profile_picture")
-    public ResponseEntity<UserActionResponse> changeProfilePicture(@RequestBody byte[] imageData) {
+    public ResponseEntity<UserActionResponse> changeProfilePicture(@RequestPart("imageData") MultipartFile imageData) throws IOException {
         return ResponseEntity.ok(service.uploadProfilePicture(
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                imageData
+                imageData.getBytes()
         ));
     }
 

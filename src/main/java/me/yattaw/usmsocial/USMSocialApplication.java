@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -42,7 +46,7 @@ public class USMSocialApplication {
                                 .firstName("USMSocial")
                                 .lastName("Admin")
                                 .email("admin")
-                                .password(encoder.encode(adminPassword))
+                                .password(encoder.encode("admin")) // user adminPassword later
                                 .role(Role.ADMIN)
                                 .timestamp(LocalDateTime.now())
                                 .build()

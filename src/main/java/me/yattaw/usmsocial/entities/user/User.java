@@ -41,6 +41,7 @@ public class User implements UserDetails {
     private Role role;
 
     @Lob
+    @Column(name = "profile_picture", columnDefinition="LONGBLOB")
     private byte[] profilePicture;
 
     private String verificationToken;
