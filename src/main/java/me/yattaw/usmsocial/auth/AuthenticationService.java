@@ -26,11 +26,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
 
-        request.setOAuthRegistration(false); // Disable OAuthRegistration for now.
         if (request.isOAuthRegistration()) {
             // register with oAuth
             User user = handleOAuthRegistration(request);
-
             // Continue with the registration process...
             // (generate verification token, save to the database, generate JWT, send email, etc.)
             userRepository.save(user);
