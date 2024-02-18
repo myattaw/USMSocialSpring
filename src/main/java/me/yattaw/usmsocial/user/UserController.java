@@ -1,10 +1,6 @@
 package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.user.responses.RecommendedPostResponse;
-import me.yattaw.usmsocial.user.requests.UserRequest;
-import me.yattaw.usmsocial.user.requests.UserPostRequest;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -18,8 +14,11 @@ public class UserController {
     private final UserService service;
 
     @PatchMapping("/profile_picture")
-    public ResponseEntity<String> changeProfilePicture( ) {
-        return ResponseEntity.ok("not implemented yet");
+    public ResponseEntity<UserActionResponse> changeProfilePicture(@RequestBody byte[] imageData) {
+        return ResponseEntity.ok(service.uploadProfilePicture(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                imageData
+        ));
     }
 
     @PostMapping("/follow/{id}")

@@ -40,6 +40,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Lob
+    private byte[] profilePicture;
+
     private String verificationToken;
 
     private boolean verified;

@@ -10,6 +10,10 @@ import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -82,4 +86,52 @@ public class UserService {
     }
 
 
+    public UserActionResponse uploadProfilePicture(HttpServletRequest request, byte[] imageData) {
+        String token = jwtService.extractToken(request);
+
+        Optional<User> user = userRepository.findByEmail(
+                jwtService.fetchEmail(token)
+        );
+
+        // This should only happen if a user was deleted
+        if (user.isEmpty()) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Unable to authorize the user token.")
+                    .build();
+        }
+
+        int maxSizeInBytes = 10 * 1024 * 1024;
+        if (imageData.length > maxSizeInBytes) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Image size exceeds the maximum allowed limit.")
+                    .build();
+        }
+
+        if (!isValidImageFormat(imageData)) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Invalid image format.")
+                    .build();
+        }
+        
+        user.get().setProfilePicture(imageData);
+        userRepository.save(user.get());
+
+        return UserActionResponse.builder()
+                .status(1)
+                .message("User has successfully updated profile picture!")
+                .build();
+    }
+
+    private boolean isValidImageFormat(byte[] imageData) {
+        try (InputStream inputStream = new ByteArrayInputStream(imageData)) {
+            ImageIO.read(inputStream);
+            return true;  // If successful, the format is valid
+        } catch (IOException e) {
+            // If an IOException occurs, it means the image format is not valid
+            return false;
+        }
+    }
 }
