@@ -1,6 +1,7 @@
 package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;

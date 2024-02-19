@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.service.JwtService;
-import me.yattaw.usmsocial.user.UserActionResponse;
+import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

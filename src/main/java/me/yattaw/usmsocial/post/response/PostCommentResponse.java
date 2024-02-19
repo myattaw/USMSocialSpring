@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.user.responses;
+package me.yattaw.usmsocial.post.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,11 +11,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostLikeResponse {
+public class PostCommentResponse {
 
-    private Long likeID;
-    private String likerFirstName;
-    private String likerLastName;
+    private Long commentId;
+    private String content;
+    private String commenterFirstName;
+    private String commenterLastName;
     private LocalDateTime timestamp;
 
 }

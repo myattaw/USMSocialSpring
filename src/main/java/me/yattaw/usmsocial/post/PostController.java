@@ -1,10 +1,10 @@
 package me.yattaw.usmsocial.post;
 
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.user.UserActionResponse;
-import me.yattaw.usmsocial.user.requests.UserPostRequest;
+import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.requests.UserRequest;
-import me.yattaw.usmsocial.user.responses.RecommendedPostResponse;
+import me.yattaw.usmsocial.post.response.RecommendedPostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

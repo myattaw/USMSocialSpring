@@ -8,6 +8,7 @@ import me.yattaw.usmsocial.entities.user.UserFollowers;
 import me.yattaw.usmsocial.repositories.FollowerRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
+import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;

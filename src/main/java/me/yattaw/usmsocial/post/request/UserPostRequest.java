@@ -1,4 +1,4 @@
-package me.yattaw.usmsocial.user.requests;
+package me.yattaw.usmsocial.post.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
