@@ -2,10 +2,13 @@ package me.yattaw.usmsocial.user;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.entities.report.UserReport;
+import me.yattaw.usmsocial.entities.report.UserReportRequest;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserFollowerId;
 import me.yattaw.usmsocial.entities.user.UserFollowers;
 import me.yattaw.usmsocial.repositories.FollowerRepository;
+import me.yattaw.usmsocial.repositories.ReportRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
@@ -23,18 +26,18 @@ import java.util.Optional;
 public class UserService {
 
     private final FollowerRepository followerRepository;
+    private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public UserActionResponse followUser(HttpServletRequest servletRequest, Integer followingId) {
-
+    private Optional<User> getCurrentUser(HttpServletRequest servletRequest) {
         String token = jwtService.extractToken(servletRequest);
+        return userRepository.findByEmail(jwtService.fetchEmail(token));
+    }
 
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
+    private UserActionResponse handleUserAction(HttpServletRequest servletRequest, Integer followingId, boolean isFollow) {
+        Optional<User> user = getCurrentUser(servletRequest);
 
-        // This should only happen if a user was deleted
         if (user.isEmpty()) {
             return UserActionResponse.builder()
                     .status(0)
@@ -42,59 +45,39 @@ public class UserService {
                     .build();
         }
 
-        followerRepository.save(UserFollowers.builder()
-                .id(
-                        UserFollowerId.builder()
-                                .following(userRepository.getById(followingId))
-                                .follower(user.get())
-                                .build()
-                )
-                .timestamp(LocalDateTime.now())
-                .build());
+        if (isFollow) {
+            followerRepository.save(UserFollowers.builder()
+                    .id(UserFollowerId.builder()
+                            .following(userRepository.getById(followingId))
+                            .follower(user.get())
+                            .build())
+                    .timestamp(LocalDateTime.now())
+                    .build());
+        } else {
+            followerRepository.deleteById(UserFollowerId.builder()
+                    .following(userRepository.getById(followingId))
+                    .follower(user.get())
+                    .build());
+        }
 
+        String actionMessage = isFollow ? "followed" : "unfollowed";
         return UserActionResponse.builder()
                 .status(1)
-                .message("User has successfully followed!")
+                .message(String.format("User has successfully %s!", actionMessage))
                 .build();
+    }
 
+    public UserActionResponse followUser(HttpServletRequest servletRequest, Integer followingId) {
+        return handleUserAction(servletRequest, followingId, true);
     }
 
     public UserActionResponse unfollowUser(HttpServletRequest servletRequest, Integer followingId) {
-
-        String token = jwtService.extractToken(servletRequest);
-
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
-
-        // This should only happen if a user was deleted
-        if (user.isEmpty()) {
-            return UserActionResponse.builder()
-                    .status(0)
-                    .message("Unable to authorize the user token.")
-                    .build();
-        }
-
-        followerRepository.deleteById(UserFollowerId.builder()
-                .following(userRepository.getById(followingId))
-                .follower(user.get())
-                .build());
-
-        return UserActionResponse.builder()
-                .status(1)
-                .message("User has successfully unfollowed!")
-                .build();
+        return handleUserAction(servletRequest, followingId, false);
     }
 
-
     public UserActionResponse uploadProfilePicture(HttpServletRequest request, byte[] imageData) {
-        String token = jwtService.extractToken(request);
+        Optional<User> user = getCurrentUser(request);
 
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
-
-        // This should only happen if a user was deleted
         if (user.isEmpty()) {
             return UserActionResponse.builder()
                     .status(0)
@@ -116,7 +99,7 @@ public class UserService {
                     .message("Invalid image format.")
                     .build();
         }
-        
+
         user.get().setProfilePicture(imageData);
         userRepository.save(user.get());
 
@@ -124,6 +107,33 @@ public class UserService {
                 .status(1)
                 .message("User has successfully updated profile picture!")
                 .build();
+    }
+
+    public UserActionResponse reportId(HttpServletRequest request, UserReportRequest reportRequest) {
+        Optional<User> user = getCurrentUser(request);
+
+        if (user.isEmpty()) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Unable to authorize the user token.")
+                    .build();
+        }
+
+        UserReport userReport = UserReport.builder()
+                .reported(reportRequest.getTargetId())
+                .reason(reportRequest.getReason())
+                .reportType(reportRequest.getReportType())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        reportRepository.save(userReport);
+
+        return UserActionResponse.builder()
+                .status(1)
+                .message(String.format("You have successfully reported %d for %s.",
+                        reportRequest.getTargetId(),
+                        reportRequest.getReportType().name())
+                ).build();
     }
 
     private boolean isValidImageFormat(byte[] imageData) {
@@ -135,4 +145,5 @@ public class UserService {
             return false;
         }
     }
+
 }

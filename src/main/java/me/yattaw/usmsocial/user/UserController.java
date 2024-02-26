@@ -1,6 +1,7 @@
 package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.entities.report.UserReportRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,14 @@ public class UserController {
     @PostMapping("/message/{id}")
     public ResponseEntity<String> messageUser(@PathVariable String id) {
         return ResponseEntity.ok("not implemented yet");
+    }
+
+    @PostMapping("/report")
+    public ResponseEntity<UserActionResponse> reportId(@RequestBody UserReportRequest request) {
+        return ResponseEntity.ok(
+                service.reportId(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                request)
+        );
     }
 
 }
