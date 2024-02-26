@@ -1,0 +1,45 @@
+name: Publish USM Social Media Backend
+
+on:
+  push:
+    branches: [ "main", "obean-server-setup" ]
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  publish_backend_api:
+    name: Publish USM Social Media Backend
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        distribution: adopt
+        java-version: '17'
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Upload Jar via SSH
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        source: "target/USMSocial-0.0.1-SNAPSHOT.jar"
+        target: "/artifact/USMSocial-0.0.1-SNAPSHOT.jar"
+
+    - name: Restart the backend application
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          systemctl daemon-reload
+          systemctl restart usm-social-media-backend.service
