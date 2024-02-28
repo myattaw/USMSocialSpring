@@ -32,7 +32,6 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         source: "target/USMSocial-0.0.1-SNAPSHOT.jar"
         target: "/artifact"
-        rm: true
         overwrite: true
 
     - name: Restart the backend application
