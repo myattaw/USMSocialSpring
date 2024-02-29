@@ -89,11 +89,14 @@ public class User implements UserDetails {
     }
 
     /**
-     * Validate email is from the maine.edu domain
+     * Validates that the email is associated with the maine.edu domain.
+     * Throws an IllegalStateException if the email does not end with "@maine.edu".
      */
+    @PrePersist
+    @PreUpdate
     public void validateEmail() {
         if (!email.toLowerCase().endsWith("@maine.edu")) {
-            throw new IllegalStateException("Email is not from the maine.edu domain.");
+            throw new IllegalStateException("Email must be from the maine.edu domain.");
         }
     }
 
