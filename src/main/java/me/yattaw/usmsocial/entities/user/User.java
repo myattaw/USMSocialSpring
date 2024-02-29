@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import me.yattaw.usmsocial.repositories.UserRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -83,6 +86,15 @@ public class User implements UserDetails {
     public void generateVerificationToken() {
         String verificationToken = UUID.randomUUID().toString();
         setVerificationToken(verificationToken);
+    }
+
+    /**
+     * Validate email is from the maine.edu domain
+     */
+    public void validateEmail() {
+        if (!email.toLowerCase().endsWith("@maine.edu")) {
+            throw new IllegalStateException("Email is not from the maine.edu domain.");
+        }
     }
 
 }
