@@ -1,6 +1,6 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://usm-social-media-cluster-do-user-15765805-0.c.db.ondigitalocean.com:25060/spring_database
     username: doadmin
     password: ${SPRING_DATABASE_PASSWORD}
