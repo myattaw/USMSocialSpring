@@ -2,7 +2,7 @@ name: Publish USM Social Media Backend
 
 on:
   push:
-    branches: [ "main", "obean-server-setup" ]
+    branches: [ "master", "obean-server-setup" ]
     paths-ignore:
       - 'README.md'
 
