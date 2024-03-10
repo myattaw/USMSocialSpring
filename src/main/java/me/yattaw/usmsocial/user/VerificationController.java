@@ -55,8 +55,8 @@ public class VerificationController {
                         user,
                         "Password Change Confirmation for USM Social Account",
                         "Thank you for using USM Social! To complete the password change process, " +
-                                "please click the link below:",
-                        "https://www.google.com/", // Change this url to front end reset password form later
+                        "please click the link below:",
+                        "https://www.mainecollege.tech/#/passwordchange/" + user.getEmail().split("@")[0] + "/" + user.getVerificationToken(),
                         "Change Password"
                 );
             }

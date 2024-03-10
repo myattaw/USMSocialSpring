@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://usm-social-media-cluster-do-user-15765805-0.c.db.ondigitalocean.com:25060/spring_database
+    username: doadmin
+    password: ${SPRING_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    host: "us2.smtp.mailhostbox.com"
+    port: 587
+    username: ${LOGIN_SMTP_USERNAME}
+    password: ${LOGIN_SMTP_PASSWORD}
+server:
+   port: 443
+   ssl:
+      key-store: file:/etc/letsencrypt/live/api.mainecollege.tech/keystore.p12
+      key-store-password: ${KEYSTORE_PASSWORD}
+      keyStoreType: PKCS12
+      keyAlias: tomcat
+
+logging:
+  level:
+    web: debug

@@ -49,7 +49,7 @@ Install Maven with chocolatey: `choco install maven`
 
 ### Run Backend to localhost
 
-Start up backend by running `mvn spring-boot:run`
+Start up backend by running `mvn spring-boot:run "-Dspring-boot.run.profiles=dev"`
 
 ## Authentication Endpoints
 
