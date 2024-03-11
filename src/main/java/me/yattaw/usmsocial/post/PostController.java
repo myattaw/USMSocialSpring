@@ -47,9 +47,21 @@ public class PostController {
     public ResponseEntity<UserActionResponse> likePost(
             @RequestBody UserRequest request
     ) {
-        return ResponseEntity.ok(service.likePost(
+        return ResponseEntity.ok(service.adjustPostLike(
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                request)
+                request,
+                true)
+        );
+    }
+
+    @PostMapping("/unlike")
+    public ResponseEntity<UserActionResponse> unlikePost(
+            @RequestBody UserRequest request
+    ) {
+        return ResponseEntity.ok(service.adjustPostLike(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                request,
+                false)
         );
     }
 

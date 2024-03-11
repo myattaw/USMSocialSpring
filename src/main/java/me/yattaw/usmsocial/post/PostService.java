@@ -143,9 +143,10 @@ public class PostService {
                 .build();
     }
 
-    public UserActionResponse likePost(
+    public UserActionResponse adjustPostLike(
             HttpServletRequest servletRequest,
-            UserRequest request
+            UserRequest request,
+            boolean addLike
     ) {
 
         String token = jwtService.extractToken(servletRequest);
@@ -166,10 +167,23 @@ public class PostService {
         if (userPost.isPresent()) {
             // Check if the user has already liked the post
             if (userPost.get().getLikes().stream().anyMatch(like -> like.getUser().equals(user.get()))) {
-                return UserActionResponse.builder()
-                        .status(0)
-                        .message("User has already liked this post.")
-                        .build();
+                if (addLike) {
+                    return UserActionResponse.builder()
+                            .status(0)
+                            .message("User has already liked this post.")
+                            .build();
+                } else {
+                    for (PostLike like : userPost.get().getLikes()) {
+                        if (like.getUser().equals(user.get())) {
+                            userPost.get().removeLike(like);
+                            likeRepository.delete(like);
+                            return UserActionResponse.builder()
+                                    .status(1)
+                                    .message("User has successfully removed like to post.")
+                                    .build();
+                        }
+                    }
+                }
             }
 
             PostLike postLike = PostLike.builder()
@@ -180,6 +194,7 @@ public class PostService {
 
             userPost.get().addLike(postLike);
             likeRepository.save(postLike);
+
             return UserActionResponse.builder()
                     .status(1)
                     .message("User has successfully added like to post.")
