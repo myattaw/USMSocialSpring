@@ -32,11 +32,12 @@ Install Maven with chocolatey: `choco install maven`
 
 ### Environment Variables
 
-| Name                     | Description                    |
-| ------------------------ | ------------------------------ |
-| SPRING_DATABASE_PASSWORD | The password for root username |
-| LOGIN_SMTP_USERNAME      | The username for gmail account |
-| LOGIN_SMTP_PASSWORD      | The password for gmail account |
+| Name                     | Description                                   |
+| ------------------------ |-----------------------------------------------|
+| SPRING_DATABASE_PASSWORD | The password for root username                |
+| LOGIN_SMTP_USERNAME      | The username for gmail account                |
+| LOGIN_SMTP_PASSWORD      | The password for gmail account                |
+| spring.profiles.active   | Use values `dev` or `prod` to use the configs |
 
 ### Database setup
 
