@@ -60,7 +60,7 @@ public class AuthenticationService {
                             "Before we begin, we want to ensure that it's really you. " +
                             "Please click the button below to verify your email address:",
 
-                    "http://localhost:8080/api/v1/verify/" + user.getVerificationToken(),
+                    "https://www.mainecollege.tech/#/verify/" + user.getVerificationToken(),
                     "Verify Account"
             );
 

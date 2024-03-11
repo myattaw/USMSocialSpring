@@ -42,7 +42,7 @@
 <table class="responsive-table">
     <tr>
         <td style="padding: 40px 50px;" align="center">
-            <h2 style="font-size: 20px; color: #4f545c;">Hey ${firstName} ${lastName},</h2>
+            <h2 style="font-size: 20px; color: #4f545c;">Hey there,</h2>
             <p style="color: #737f8d;">${body}</p>
             <a href="${verifyLink}"
                style="background: #002752; color: #f5a800; padding: 15px 19px; border-radius: 3px; text-decoration: none; font-size: 15px;">${buttonText}</a>
