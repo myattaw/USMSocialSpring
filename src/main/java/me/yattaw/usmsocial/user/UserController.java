@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.report.UserReportRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+import me.yattaw.usmsocial.entities.user.UserInfo;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,16 @@ public class UserController {
     @GetMapping("/info/{id}")
     public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), id));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserInfoResponse> getUserProfile() {
+        return ResponseEntity.ok(service.getProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfo userInfo) {
+        return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), userInfo));
     }
 
     @PostMapping("/follow/{id}")

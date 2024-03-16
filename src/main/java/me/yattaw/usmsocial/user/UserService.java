@@ -8,6 +8,7 @@ import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserFollowerId;
 import me.yattaw.usmsocial.entities.user.UserFollowers;
+import me.yattaw.usmsocial.entities.user.UserInfo;
 import me.yattaw.usmsocial.repositories.FollowerRepository;
 import me.yattaw.usmsocial.repositories.ReportRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
@@ -55,6 +56,30 @@ public class UserService {
         
         return UserInfoResponse.builder()
                 .user(userProfile.get().getUserInfo())
+                .build();
+    }
+
+    public UserInfoResponse getProfileUserInfo(HttpServletRequest servletRequest) {
+        Optional<User> user = getCurrentUser(servletRequest);
+
+        isAuthorizedAccess(servletRequest);
+
+        return UserInfoResponse.builder().user(user.get().getUserInfo()).build();
+    }
+
+    public UserActionResponse setProfileUserInfo(HttpServletRequest servletRequest, UserInfo userInfo) {
+        Optional<User> user = getCurrentUser(servletRequest);
+
+        user.get().setFirstName(userInfo.getFirstName());
+        user.get().setLastName(userInfo.getLastName());
+        user.get().setEmail(userInfo.getEmail());
+        user.get().setTagLine(userInfo.getTagLine());
+        user.get().setBio(userInfo.getBio());
+        userRepository.save(user.get());
+
+        return UserActionResponse.builder()
+                .status(1)
+                .message("User has successfully updated their profile!")
                 .build();
     }
 
