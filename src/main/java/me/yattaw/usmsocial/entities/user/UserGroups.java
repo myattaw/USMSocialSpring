@@ -17,15 +17,21 @@ import java.util.Set;
 @Table(name = "usm_social_groups")
 public class UserGroups {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "group_id")
+    private Integer id;
 
     private String name;
 
-    @ManyToMany(mappedBy = "groups")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_groups_mapping", // Name of the join table
+            joinColumns = @JoinColumn(name = "group_id"), // Column in the join table referring to this entity (UserGroups)
+            inverseJoinColumns = @JoinColumn(name = "user_id") // Column in the join table referring to the other entity (User)
+    )
     private Set<User> members;
+
 
     private LocalDateTime timestamp;
 

@@ -20,12 +20,14 @@ public class GroupMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false) // Join column for sender
     private User sender;
 
     @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false) // Join column for group
     private UserGroups group;
 
     private String message;

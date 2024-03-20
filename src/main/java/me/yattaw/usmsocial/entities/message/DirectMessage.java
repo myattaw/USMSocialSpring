@@ -17,15 +17,16 @@ import java.time.LocalDateTime;
 @Table(name = "usm_social_direct_messages")
 public class DirectMessage {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "sender_id")
     private User sender;
 
     @ManyToOne
+    @JoinColumn(name = "receiver_id")
     private User receiver;
 
     private String message;

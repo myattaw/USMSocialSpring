@@ -5,16 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import me.yattaw.usmsocial.entities.message.DirectMessage;
+import me.yattaw.usmsocial.entities.message.GroupMessage;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @Entity
@@ -46,6 +45,18 @@ public class User implements UserDetails {
     @Lob
     @Column(name = "profile_picture", columnDefinition="LONGBLOB")
     private byte[] profilePicture;
+
+    @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
+    private Set<UserGroups> groups;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DirectMessage> sentMessages;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DirectMessage> receivedMessages;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<GroupMessage> sentGroupMessages;
 
     private String verificationToken;
 
