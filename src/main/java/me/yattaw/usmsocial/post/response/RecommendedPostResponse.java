@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import me.yattaw.usmsocial.entities.user.PostUserInfo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +17,7 @@ public class RecommendedPostResponse {
 
     private Integer id;
     private String content;
-    private String postersFirstName;
-    private String postersLastName;
+    private PostUserInfo postUserInfo;
     private List<PostCommentResponse> comments;
     private LocalDateTime timestamp;
     private int likeCount;

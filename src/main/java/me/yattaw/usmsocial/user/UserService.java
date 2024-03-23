@@ -4,14 +4,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.report.UserReport;
 import me.yattaw.usmsocial.entities.report.UserReportRequest;
+import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserFollowerId;
 import me.yattaw.usmsocial.entities.user.UserFollowers;
+import me.yattaw.usmsocial.entities.user.UserInfo;
 import me.yattaw.usmsocial.repositories.FollowerRepository;
 import me.yattaw.usmsocial.repositories.ReportRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
+import me.yattaw.usmsocial.user.responses.AuthenicationException;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+import org.springframework.security.core.AuthenticationException;
+
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -33,6 +39,51 @@ public class UserService {
     private Optional<User> getCurrentUser(HttpServletRequest servletRequest) {
         String token = jwtService.extractToken(servletRequest);
         return userRepository.findByEmail(jwtService.fetchEmail(token));
+    }
+
+    private void isAuthorizedAccess(HttpServletRequest servletRequest) throws AuthenticationException {
+        Optional<User> userRequesting = getCurrentUser(servletRequest);
+
+        if (userRequesting.isEmpty() || userRequesting.get().getRole() == Role.GUEST) {
+            throw new AuthenicationException("Only users can access");
+        }
+    }
+    
+    public UserInfoResponse getUserInfo(HttpServletRequest servletRequest, Integer userId) {
+        isAuthorizedAccess(servletRequest);
+
+        Optional<User> userProfile = userRepository.findById(userId);
+
+        boolean isFollowing = !followerRepository.getUserFollowerEachOther(userProfile.get().getId(), userId).isEmpty();
+        boolean isOwnProfile = userProfile.get().getId() == userId;
+        
+        return UserInfoResponse.builder()
+                .user(userProfile.get().getUserInfo())
+                .isFollowing(isFollowing)
+                .isOwnProfile(isOwnProfile)
+                .build();
+    }
+
+    public UserInfoResponse getProfileUserInfo(HttpServletRequest servletRequest) {
+        Optional<User> user = getCurrentUser(servletRequest);
+
+        return UserInfoResponse.builder().user(user.get().getUserInfo()).build();
+    }
+
+    public UserActionResponse setProfileUserInfo(HttpServletRequest servletRequest, UserInfo userInfo) {
+        Optional<User> user = getCurrentUser(servletRequest);
+
+        user.get().setFirstName(userInfo.getFirstName());
+        user.get().setLastName(userInfo.getLastName());
+        user.get().setEmail(userInfo.getEmail());
+        user.get().setTagLine(userInfo.getTagLine());
+        user.get().setBio(userInfo.getBio());
+        userRepository.save(user.get());
+
+        return UserActionResponse.builder()
+                .status(1)
+                .message("User has successfully updated their profile!")
+                .build();
     }
 
     private UserActionResponse handleUserAction(HttpServletRequest servletRequest, Integer followingId, boolean isFollow) {

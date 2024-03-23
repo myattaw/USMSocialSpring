@@ -2,7 +2,11 @@ package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.report.UserReportRequest;
+import me.yattaw.usmsocial.entities.user.UserInfo;
+import me.yattaw.usmsocial.user.requests.UserInfoRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,6 +28,22 @@ public class UserController {
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
                 imageData.getBytes()
         ));
+    }
+
+    @GetMapping("/info/{id}")
+    public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), id));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserInfoResponse> getUserProfile() {
+        return ResponseEntity.ok(service.getProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfoRequest request) {
+        return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+                new UserInfo(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getTagLine(), request.getBio())));
     }
 
     @PostMapping("/follow/{id}")
