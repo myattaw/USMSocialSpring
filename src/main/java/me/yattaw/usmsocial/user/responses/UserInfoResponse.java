@@ -13,5 +13,7 @@ import me.yattaw.usmsocial.entities.user.*;
 public class UserInfoResponse {
     
     private UserInfo user;
+    private boolean isFollowing;
+    private boolean isOwnProfile;
 
 }

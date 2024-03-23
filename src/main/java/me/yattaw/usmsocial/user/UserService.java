@@ -53,9 +53,14 @@ public class UserService {
         isAuthorizedAccess(servletRequest);
 
         Optional<User> userProfile = userRepository.findById(userId);
+
+        boolean isFollowing = !followerRepository.getUserFollowerEachOther(userProfile.get().getId(), userId).isEmpty();
+        boolean isOwnProfile = userProfile.get().getId() == userId;
         
         return UserInfoResponse.builder()
                 .user(userProfile.get().getUserInfo())
+                .isFollowing(isFollowing)
+                .isOwnProfile(isOwnProfile)
                 .build();
     }
 
