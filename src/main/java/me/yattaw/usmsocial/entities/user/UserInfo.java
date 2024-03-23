@@ -5,14 +5,9 @@ import lombok.Getter;
 @Getter
 public class UserInfo extends PostUserInfo {
 
-    private int id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String tagLine;
     private String bio;
     
-    UserInfo(
+    public UserInfo(
         int id,
         String firstName,
         String lastName,

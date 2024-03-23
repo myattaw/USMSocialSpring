@@ -44,7 +44,7 @@ public class UserService {
     private void isAuthorizedAccess(HttpServletRequest servletRequest) throws AuthenticationException {
         Optional<User> userRequesting = getCurrentUser(servletRequest);
 
-        if (userRequesting.isEmpty() || userRequesting.get().getRole() != Role.GUEST) {
+        if (userRequesting.isEmpty() || userRequesting.get().getRole() == Role.GUEST) {
             throw new AuthenicationException("Only users can access");
         }
     }
@@ -61,8 +61,6 @@ public class UserService {
 
     public UserInfoResponse getProfileUserInfo(HttpServletRequest servletRequest) {
         Optional<User> user = getCurrentUser(servletRequest);
-
-        isAuthorizedAccess(servletRequest);
 
         return UserInfoResponse.builder().user(user.get().getUserInfo()).build();
     }

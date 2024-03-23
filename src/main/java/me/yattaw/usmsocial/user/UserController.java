@@ -2,9 +2,10 @@ package me.yattaw.usmsocial.user;
 
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.report.UserReportRequest;
+import me.yattaw.usmsocial.entities.user.UserInfo;
+import me.yattaw.usmsocial.user.requests.UserInfoRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
-import me.yattaw.usmsocial.entities.user.UserInfo;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +40,10 @@ public class UserController {
         return ResponseEntity.ok(service.getProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
     }
 
-    @PatchMapping("/profile")
-    public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfo userInfo) {
-        return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), userInfo));
+    @PutMapping("/profile")
+    public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfoRequest request) {
+        return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+                new UserInfo(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getTagLine(), request.getBio())));
     }
 
     @PostMapping("/follow/{id}")
