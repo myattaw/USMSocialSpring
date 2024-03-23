@@ -7,13 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import me.yattaw.usmsocial.entities.message.DirectMessage;
 import me.yattaw.usmsocial.entities.message.GroupMessage;
-import me.yattaw.usmsocial.repositories.UserRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -38,6 +39,12 @@ public class User implements UserDetails {
 
     @Column(length = 64)
     private String password;
+
+    @Column(length = 50)
+    private String tagLine;
+
+    @Column(length = 200)
+    private String bio;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -92,6 +99,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public PostUserInfo getPostUserInfo() {
+        return new PostUserInfo(id, firstName, lastName, email, tagLine);
+    }
+
+    public UserInfo getUserInfo() {
+        return new UserInfo(id, firstName, lastName, email, tagLine, bio);
     }
 
     public void generateVerificationToken() {

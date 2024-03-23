@@ -3,6 +3,8 @@ package me.yattaw.usmsocial.user;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.report.UserReportRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,6 +26,11 @@ public class UserController {
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
                 imageData.getBytes()
         ));
+    }
+
+    @GetMapping("/info/{id}")
+    public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), id));
     }
 
     @PostMapping("/follow/{id}")

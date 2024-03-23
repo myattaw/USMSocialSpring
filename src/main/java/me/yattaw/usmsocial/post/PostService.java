@@ -126,8 +126,7 @@ public class PostService {
         return RecommendedPostResponse.builder()
                 .id(post.getId())
                 .content(post.getContent())
-                .postersFirstName(post.getUser().getFirstName())
-                .postersLastName(post.getUser().getLastName())
+                .postUserInfo(post.getUser().getPostUserInfo())
                 //TODO: make the code only fetch 10 comments at a time
                 .comments(
                         post.getComments().stream().map(comment -> PostCommentResponse.builder()
