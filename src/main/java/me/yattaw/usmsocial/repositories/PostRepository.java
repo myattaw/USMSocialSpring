@@ -19,6 +19,21 @@ public interface PostRepository extends JpaRepository<UserPost, Integer> {
     void deleteByUser(User user);
 
     Page<UserPost> findAll(Pageable pageable);
+    
+    @Query(
+        value = "SELECT * FROM usm_social_posts WHERE timestamp <= :datetime", 
+        nativeQuery = true)
+    Page<UserPost> getRecommended(@Param("datetime") LocalDateTime datetime, Pageable pageable);
+
+    @Query(
+        value = "SELECT COUNT(*) FROM usm_social_posts WHERE timestamp <= :datetimeCurrent AND timestamp >= :datetimeFetchBefore ORDER BY timestamp DESC",
+        nativeQuery = true)
+    Integer getNewRecommendedPostsCount(@Param("datetimeCurrent") LocalDateTime datetimeCurrent, @Param("datetimeFetchBefore") LocalDateTime datetimeFetchBefore);
+
+    @Query(
+        value = "SELECT * FROM usm_social_posts WHERE timestamp <= :datetimeCurrent AND timestamp >= :datetimeFetchBefore ORDER BY timestamp DESC", 
+        nativeQuery = true)
+    List<UserPost> getNewRecommendedPosts(@Param("datetimeCurrent") LocalDateTime datetimeCurrent, @Param("datetimeFetchBefore") LocalDateTime datetimeFetchBefore);
 
     @Query("SELECT COUNT(pl) FROM UserPost up JOIN up.likes pl WHERE up.id = :postId")
     Integer getLikeCount(@Param("postId") Integer postId);

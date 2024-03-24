@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.requests.UserRequest;
-import me.yattaw.usmsocial.post.response.RecommendedPostResponse;
-import me.yattaw.usmsocial.post.response.UserPostNewInfoResponse;
-import me.yattaw.usmsocial.post.response.UserPostNewResponse;
-import me.yattaw.usmsocial.post.response.UserPostResponse;
+import me.yattaw.usmsocial.post.response.PostNewInfoResponse;
+import me.yattaw.usmsocial.post.response.PostNewResponse;
+import me.yattaw.usmsocial.post.response.PostResponse;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,12 +44,37 @@ public class PostController {
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<ResponseEntity<Page<RecommendedPostResponse>>> getRecommendedPosts() {
-        return ResponseEntity.ok(service.getRecommendedPosts());
+    public ResponseEntity<ResponseEntity<PostResponse>> getRecommendedPosts(
+                @RequestParam(name = "datetime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
+                @RequestParam Integer pageNumber,
+                @RequestParam Integer pageSize) {
+        if (dateTime == null) {
+                dateTime = LocalDateTime.now();
+        }
+        
+        return ResponseEntity.ok(service.getRecommendedPosts(dateTime, pageNumber, pageSize));
+    }
+
+    @GetMapping("new/recommended")
+    public ResponseEntity<ResponseEntity<PostNewResponse>> getNewRecommendedPosts(
+          @RequestParam(name = "lastFetchDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchDateTime){
+        
+        LocalDateTime serverLocalTime = LocalDateTime.now();
+
+        return ResponseEntity.ok(service.getNewRecommendedPosts(lastFetchDateTime, serverLocalTime));
+    }
+
+    @GetMapping("new/fetch/recommended")
+    public ResponseEntity<ResponseEntity<PostNewInfoResponse>> getNewRecommendedPostsCount(
+          @RequestParam(name = "lastFetchDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchDateTime){
+        
+        LocalDateTime serverLocalTime = LocalDateTime.now();
+
+        return ResponseEntity.ok(service.getNewRecommendedPostsCount(lastFetchDateTime, serverLocalTime));
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<ResponseEntity<UserPostResponse>> getUserPosts(@PathVariable Integer id, 
+    public ResponseEntity<ResponseEntity<PostResponse>> getUserPosts(@PathVariable Integer id, 
                 @RequestParam(name = "datetime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
                 @RequestParam Integer pageNumber,
                 @RequestParam Integer pageSize) {
@@ -63,7 +86,7 @@ public class PostController {
     }
 
     @GetMapping("/new/user/{id}")
-    public ResponseEntity<ResponseEntity<UserPostNewResponse>> getNewUserPosts(@PathVariable Integer id,
+    public ResponseEntity<ResponseEntity<PostNewResponse>> getNewUserPosts(@PathVariable Integer id,
         @RequestParam(name = "lastFetchDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchDateTime) {
         
         LocalDateTime serverLocalTime = LocalDateTime.now();
@@ -72,7 +95,7 @@ public class PostController {
     }
 
     @GetMapping("/new/fetch/user/{id}")
-    public ResponseEntity<ResponseEntity<UserPostNewInfoResponse>> getNewUserPostsCount(@PathVariable Integer id,
+    public ResponseEntity<ResponseEntity<PostNewInfoResponse>> getNewUserPostsCount(@PathVariable Integer id,
         @RequestParam(name = "lastFetchDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchDateTime) {
         
         LocalDateTime serverLocalTime = LocalDateTime.now();

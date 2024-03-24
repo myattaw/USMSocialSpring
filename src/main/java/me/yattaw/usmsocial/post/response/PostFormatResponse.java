@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecommendedPostResponse {
+public class PostFormatResponse {
 
     private Integer id;
     private String content;
