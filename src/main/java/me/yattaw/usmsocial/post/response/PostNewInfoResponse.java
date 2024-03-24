@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPostNewInfoResponse {
+public class PostNewInfoResponse {
     
     private Integer amountOfNewPost;
     private LocalDateTime serverDateTime;

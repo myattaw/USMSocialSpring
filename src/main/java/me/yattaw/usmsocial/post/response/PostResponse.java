@@ -1,17 +1,19 @@
 package me.yattaw.usmsocial.post.response;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.domain.Page;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPostNewResponse {
-    private List<RecommendedPostResponse> posts;
-    private LocalDateTime serverDateTime;
+public class PostResponse {
+    private Page<PostFormatResponse> pageResult;
+    private LocalDateTime dateTimeFetch;
 }

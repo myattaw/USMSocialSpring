@@ -15,10 +15,10 @@ import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.post.response.PostCommentResponse;
-import me.yattaw.usmsocial.post.response.RecommendedPostResponse;
-import me.yattaw.usmsocial.post.response.UserPostNewInfoResponse;
-import me.yattaw.usmsocial.post.response.UserPostNewResponse;
-import me.yattaw.usmsocial.post.response.UserPostResponse;
+import me.yattaw.usmsocial.post.response.PostFormatResponse;
+import me.yattaw.usmsocial.post.response.PostNewInfoResponse;
+import me.yattaw.usmsocial.post.response.PostNewResponse;
+import me.yattaw.usmsocial.post.response.PostResponse;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -121,49 +121,83 @@ public class PostService {
 
     }
 
-    public ResponseEntity<Page<RecommendedPostResponse>> getRecommendedPosts() {
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
-        Page<UserPost> posts = postRepository.findAll(pageRequest);
-        return ResponseEntity.ok(posts.map(this::mapToSimplifiedPostResponse));
-    }
-
-    public ResponseEntity<UserPostResponse> getUserPosts(Integer userId, LocalDateTime dateTime, Integer pageNumber, Integer pageSize) {
+    public ResponseEntity<PostResponse> getRecommendedPosts(
+        LocalDateTime dateTime, Integer pageNumber, Integer pageSize
+    ) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"));
-        Page<UserPost> posts = postRepository.getUserPosts(userId, dateTime, pageRequest);
-        Page<RecommendedPostResponse> pageResult = posts.map(this::mapToSimplifiedPostResponse);
-        return ResponseEntity.ok(UserPostResponse.builder().pageResult(pageResult).dateTimeFetch(dateTime).build());
+        Page<UserPost> postsResult = postRepository.getRecommended(dateTime, pageRequest);
+        Page<PostFormatResponse> posts = postsResult.map(this::mapToSimplifiedPostResponse);
+
+        return ResponseEntity.ok(
+                PostResponse.builder()
+                        .pageResult(posts)
+                        .dateTimeFetch(dateTime)
+                        .build());
     }
 
-    public ResponseEntity<UserPostNewResponse> getNewUserPost(
-        Integer userId,
+    public ResponseEntity<PostNewResponse> getNewRecommendedPosts(
         LocalDateTime fetchDataTime,
-        LocalDateTime serverDateTime) {
-        List<UserPost> posts = postRepository.getNewUserPosts(userId, serverDateTime, fetchDataTime);
-        List<RecommendedPostResponse> postsResult = posts.stream().map(this::mapToSimplifiedPostResponse).collect(Collectors.toList());
-        
+        LocalDateTime serverDateTime
+    ) {
+        List<UserPost> posts = postRepository.getNewRecommendedPosts(serverDateTime, fetchDataTime);
+        List<PostFormatResponse> postsResult = posts.stream().map(this::mapToSimplifiedPostResponse).collect(Collectors.toList());
+
         return ResponseEntity.ok(
-                UserPostNewResponse.builder()
+                PostNewResponse.builder()
                         .posts(postsResult)
                         .serverDateTime(serverDateTime)
                         .build());
     }
 
-    public ResponseEntity<UserPostNewInfoResponse> getNewUserPostCount(
+    public ResponseEntity<PostNewInfoResponse> getNewRecommendedPostsCount(
+        LocalDateTime fetchDataTime,
+        LocalDateTime serverDateTime
+    ) {
+        Integer newCount = postRepository.getNewRecommendedPostsCount(serverDateTime, fetchDataTime);
+
+        return ResponseEntity.ok(PostNewInfoResponse.builder()
+                        .amountOfNewPost(newCount)
+                        .lastFetchDateTime(fetchDataTime)
+                        .serverDateTime(serverDateTime).build());
+    }
+
+    public ResponseEntity<PostResponse> getUserPosts(Integer userId, LocalDateTime dateTime, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"));
+        Page<UserPost> posts = postRepository.getUserPosts(userId, dateTime, pageRequest);
+        Page<PostFormatResponse> pageResult = posts.map(this::mapToSimplifiedPostResponse);
+        return ResponseEntity.ok(PostResponse.builder().pageResult(pageResult).dateTimeFetch(dateTime).build());
+    }
+
+    public ResponseEntity<PostNewResponse> getNewUserPost(
+        Integer userId,
+        LocalDateTime fetchDataTime,
+        LocalDateTime serverDateTime) {
+        List<UserPost> posts = postRepository.getNewUserPosts(userId, serverDateTime, fetchDataTime);
+        List<PostFormatResponse> postsResult = posts.stream().map(this::mapToSimplifiedPostResponse).collect(Collectors.toList());
+        
+        return ResponseEntity.ok(
+                PostNewResponse.builder()
+                        .posts(postsResult)
+                        .serverDateTime(serverDateTime)
+                        .build());
+    }
+
+    public ResponseEntity<PostNewInfoResponse> getNewUserPostCount(
         Integer userId,
         LocalDateTime fetchDataTime,
         LocalDateTime serverDateTime
     ) {
         Integer newCount = postRepository.getNewUserPostsCount(userId, serverDateTime, fetchDataTime);
 
-        return ResponseEntity.ok(UserPostNewInfoResponse.builder()
+        return ResponseEntity.ok(PostNewInfoResponse.builder()
                         .amountOfNewPost(newCount)
                         .lastFetchDateTime(fetchDataTime)
                         .serverDateTime(serverDateTime).build());
     }
 
-    private RecommendedPostResponse mapToSimplifiedPostResponse(UserPost post) {
+    private PostFormatResponse mapToSimplifiedPostResponse(UserPost post) {
 
-        return RecommendedPostResponse.builder()
+        return PostFormatResponse.builder()
                 .id(post.getId())
                 .content(post.getContent())
                 .postUserInfo(post.getUser().getPostUserInfo())
