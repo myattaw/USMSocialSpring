@@ -16,13 +16,19 @@ import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.requests.UserRequest;
 import me.yattaw.usmsocial.post.response.PostCommentResponse;
 import me.yattaw.usmsocial.post.response.RecommendedPostResponse;
+import me.yattaw.usmsocial.post.response.UserPostNewInfoResponse;
+import me.yattaw.usmsocial.post.response.UserPostNewResponse;
+import me.yattaw.usmsocial.post.response.UserPostResponse;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -116,9 +122,43 @@ public class PostService {
     }
 
     public ResponseEntity<Page<RecommendedPostResponse>> getRecommendedPosts() {
-        PageRequest pageRequest = PageRequest.of(0, 10);
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "timestamp"));
         Page<UserPost> posts = postRepository.findAll(pageRequest);
         return ResponseEntity.ok(posts.map(this::mapToSimplifiedPostResponse));
+    }
+
+    public ResponseEntity<UserPostResponse> getUserPosts(Integer userId, LocalDateTime dateTime, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"));
+        Page<UserPost> posts = postRepository.getUserPosts(userId, dateTime, pageRequest);
+        Page<RecommendedPostResponse> pageResult = posts.map(this::mapToSimplifiedPostResponse);
+        return ResponseEntity.ok(UserPostResponse.builder().pageResult(pageResult).dateTimeFetch(dateTime).build());
+    }
+
+    public ResponseEntity<UserPostNewResponse> getNewUserPost(
+        Integer userId,
+        LocalDateTime fetchDataTime,
+        LocalDateTime serverDateTime) {
+        List<UserPost> posts = postRepository.getNewUserPosts(userId, serverDateTime, fetchDataTime);
+        List<RecommendedPostResponse> postsResult = posts.stream().map(this::mapToSimplifiedPostResponse).collect(Collectors.toList());
+        
+        return ResponseEntity.ok(
+                UserPostNewResponse.builder()
+                        .posts(postsResult)
+                        .serverDateTime(serverDateTime)
+                        .build());
+    }
+
+    public ResponseEntity<UserPostNewInfoResponse> getNewUserPostCount(
+        Integer userId,
+        LocalDateTime fetchDataTime,
+        LocalDateTime serverDateTime
+    ) {
+        Integer newCount = postRepository.getNewUserPostsCount(userId, serverDateTime, fetchDataTime);
+
+        return ResponseEntity.ok(UserPostNewInfoResponse.builder()
+                        .amountOfNewPost(newCount)
+                        .lastFetchDateTime(fetchDataTime)
+                        .serverDateTime(serverDateTime).build());
     }
 
     private RecommendedPostResponse mapToSimplifiedPostResponse(UserPost post) {
