@@ -16,6 +16,11 @@ import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.AuthenicationException;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+import me.yattaw.usmsocial.user.responses.UserSearch;
+import me.yattaw.usmsocial.user.responses.UserSearchResponse;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.AuthenticationException;
 
 import org.springframework.stereotype.Service;
@@ -86,6 +91,22 @@ public class UserService {
                 .build();
     }
 
+    public UserSearchResponse getUserSearch(HttpServletRequest servletRequest, 
+            String searchQuery, Integer pageNumber, Integer pageSize) {
+        isAuthorizedAccess(servletRequest);
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+
+        searchQuery = searchQuery.replaceAll(" ", "");
+        searchQuery = searchQuery.replaceAll("\\.", "");
+        searchQuery = searchQuery.toLowerCase();
+
+        Page<User> usersResult = userRepository.getUserSearchName(searchQuery, pageRequest);
+        Page<UserSearch> users = usersResult.map(this::mapToSearchUserResponse);
+
+        return UserSearchResponse.builder().users(users).build();
+    }
+
     private UserActionResponse handleUserAction(HttpServletRequest servletRequest, Integer followingId, boolean isFollow) {
         Optional<User> user = getCurrentUser(servletRequest);
 
@@ -115,6 +136,14 @@ public class UserService {
         return UserActionResponse.builder()
                 .status(1)
                 .message(String.format("User has successfully %s!", actionMessage))
+                .build();
+    }
+
+    private UserSearch mapToSearchUserResponse(User user) {
+        return UserSearch.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 

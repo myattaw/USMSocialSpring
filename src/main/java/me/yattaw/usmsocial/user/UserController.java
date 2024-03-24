@@ -6,6 +6,7 @@ import me.yattaw.usmsocial.entities.user.UserInfo;
 import me.yattaw.usmsocial.user.requests.UserInfoRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+import me.yattaw.usmsocial.user.responses.UserSearchResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,14 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<UserInfoResponse> getUserProfile() {
         return ResponseEntity.ok(service.getProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<UserSearchResponse> getUserSearch(
+            @RequestParam String query,
+            @RequestParam Integer pageNumber,
+            @RequestParam Integer pageSize) {
+        return ResponseEntity.ok(service.getUserSearch(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), query, pageNumber, pageSize));
     }
 
     @PutMapping("/profile")
