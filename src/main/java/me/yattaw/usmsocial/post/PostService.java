@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.post.PostComment;
 import me.yattaw.usmsocial.entities.post.PostLike;
+import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserPost;
 import me.yattaw.usmsocial.repositories.CommentRepository;
@@ -11,6 +12,7 @@ import me.yattaw.usmsocial.repositories.LikeRepository;
 import me.yattaw.usmsocial.repositories.PostRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
+import me.yattaw.usmsocial.user.responses.AuthenicationException;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.requests.UserRequest;
@@ -42,6 +44,26 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     private final JwtService jwtService;
+
+    private Optional<User> getCurrentUser(HttpServletRequest servletRequest) {
+        String token = jwtService.extractToken(servletRequest);
+        return userRepository.findByEmail(jwtService.fetchEmail(token));
+    }
+
+    public void updateIsLiked(HttpServletRequest servletRequest, Iterable<PostFormatResponse> posts) {
+        Optional<User> user = getCurrentUser(servletRequest);
+
+        if (user.isEmpty() || user.get().getRole() == Role.GUEST) {
+                throw new AuthenicationException("Only users can access");
+        }
+
+        for (PostFormatResponse post : posts) {
+                Integer count = likeRepository.getCountOfUserAndPostLikes(user.get().getId(), post.getId());
+                System.out.println("Fetched");
+                System.out.println(count);
+                post.setLiked((count > 0));
+        }
+    }
 
     public UserActionResponse createPost(
             HttpServletRequest servletRequest,
@@ -122,11 +144,14 @@ public class PostService {
     }
 
     public ResponseEntity<PostResponse> getRecommendedPosts(
+        HttpServletRequest servletRequest,
         LocalDateTime dateTime, Integer pageNumber, Integer pageSize
     ) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"));
         Page<UserPost> postsResult = postRepository.getRecommended(dateTime, pageRequest);
         Page<PostFormatResponse> posts = postsResult.map(this::mapToSimplifiedPostResponse);
+
+        updateIsLiked(servletRequest, posts);
 
         return ResponseEntity.ok(
                 PostResponse.builder()
@@ -136,11 +161,14 @@ public class PostService {
     }
 
     public ResponseEntity<PostNewResponse> getNewRecommendedPosts(
+        HttpServletRequest servletRequest,
         LocalDateTime fetchDataTime,
         LocalDateTime serverDateTime
     ) {
         List<UserPost> posts = postRepository.getNewRecommendedPosts(serverDateTime, fetchDataTime);
         List<PostFormatResponse> postsResult = posts.stream().map(this::mapToSimplifiedPostResponse).collect(Collectors.toList());
+
+        updateIsLiked(servletRequest, postsResult);
 
         return ResponseEntity.ok(
                 PostNewResponse.builder()
@@ -161,20 +189,27 @@ public class PostService {
                         .serverDateTime(serverDateTime).build());
     }
 
-    public ResponseEntity<PostResponse> getUserPosts(Integer userId, LocalDateTime dateTime, Integer pageNumber, Integer pageSize) {
+    public ResponseEntity<PostResponse> getUserPosts(
+                HttpServletRequest servletRequest,
+                Integer userId, LocalDateTime dateTime, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"));
         Page<UserPost> posts = postRepository.getUserPosts(userId, dateTime, pageRequest);
         Page<PostFormatResponse> pageResult = posts.map(this::mapToSimplifiedPostResponse);
+
+        updateIsLiked(servletRequest, pageResult);
         return ResponseEntity.ok(PostResponse.builder().pageResult(pageResult).dateTimeFetch(dateTime).build());
     }
 
     public ResponseEntity<PostNewResponse> getNewUserPost(
+        HttpServletRequest servletRequest,
         Integer userId,
         LocalDateTime fetchDataTime,
         LocalDateTime serverDateTime) {
         List<UserPost> posts = postRepository.getNewUserPosts(userId, serverDateTime, fetchDataTime);
         List<PostFormatResponse> postsResult = posts.stream().map(this::mapToSimplifiedPostResponse).collect(Collectors.toList());
         
+        updateIsLiked(servletRequest, postsResult);
+
         return ResponseEntity.ok(
                 PostNewResponse.builder()
                         .posts(postsResult)
@@ -211,6 +246,7 @@ public class PostService {
                                 .timestamp(comment.getTimestamp())
                                 .build()).collect(Collectors.toCollection(() -> new ArrayList<>(post.getComments().size()))
                         ))
+                .isLiked(false)
                 .timestamp(post.getTimestamp())
                 .likeCount(postRepository.getLikeCount(post.getId())) // Find a better way of doing this if possible
                 .build();

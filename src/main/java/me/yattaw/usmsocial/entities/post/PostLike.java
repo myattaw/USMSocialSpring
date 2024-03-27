@@ -6,7 +6,6 @@ import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserPost;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Data
 @Entity

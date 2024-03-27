@@ -52,7 +52,8 @@ public class PostController {
                 dateTime = LocalDateTime.now();
         }
         
-        return ResponseEntity.ok(service.getRecommendedPosts(dateTime, pageNumber, pageSize));
+        return ResponseEntity.ok(service.getRecommendedPosts(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+                        dateTime, pageNumber, pageSize));
     }
 
     @GetMapping("new/recommended")
@@ -61,7 +62,8 @@ public class PostController {
         
         LocalDateTime serverLocalTime = LocalDateTime.now();
 
-        return ResponseEntity.ok(service.getNewRecommendedPosts(lastFetchDateTime, serverLocalTime));
+        return ResponseEntity.ok(service.getNewRecommendedPosts(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                lastFetchDateTime, serverLocalTime));
     }
 
     @GetMapping("new/fetch/recommended")
@@ -82,7 +84,8 @@ public class PostController {
                 dateTime = LocalDateTime.now();
         }
 
-        return ResponseEntity.ok(service.getUserPosts(id, dateTime, pageNumber, pageSize));
+        return ResponseEntity.ok(service.getUserPosts(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                id, dateTime, pageNumber, pageSize));
     }
 
     @GetMapping("/new/user/{id}")
@@ -91,7 +94,8 @@ public class PostController {
         
         LocalDateTime serverLocalTime = LocalDateTime.now();
 
-        return ResponseEntity.ok(service.getNewUserPost(id, lastFetchDateTime, serverLocalTime));
+        return ResponseEntity.ok(service.getNewUserPost(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                id, lastFetchDateTime, serverLocalTime));
     }
 
     @GetMapping("/new/fetch/user/{id}")
