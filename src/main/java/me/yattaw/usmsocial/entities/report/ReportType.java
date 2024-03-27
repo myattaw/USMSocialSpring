@@ -15,4 +15,11 @@ public enum ReportType {
         this.reasons = reasons;
     }
 
+    public String getReasonById(int id) {
+        if (id < 0 || id >= reasons.length) {
+            throw new IllegalArgumentException("You must enter a valid reason id.");
+        }
+        return reasons[id];
+    }
+
 }
