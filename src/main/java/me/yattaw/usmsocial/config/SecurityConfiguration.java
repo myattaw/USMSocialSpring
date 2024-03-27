@@ -29,6 +29,7 @@ public class SecurityConfiguration {
             "/api/v1/reset_password/**",
             "/api/v1/change_password/**",
             "/api/v1/verify/**",
+            "/api/v1/test/**"
     };
 
     @Bean
@@ -46,7 +47,6 @@ public class SecurityConfiguration {
                                         STAFF.getAuthority(), FACULTY.getAuthority(), ADMIN.getAuthority()
                                 )
                                 .requestMatchers("/api/v1/admin/**").hasAnyAuthority(ADMIN.getAuthority())
-                                .requestMatchers("/api/v1/test").hasAnyAuthority(STUDENT.getAuthority())
                                 .anyRequest()
                                 .authenticated()
                 )
