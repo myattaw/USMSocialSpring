@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import me.yattaw.usmsocial.entities.post.PostComment;
 import me.yattaw.usmsocial.entities.post.PostLike;
-import me.yattaw.usmsocial.entities.user.User;
 
 import java.time.LocalDateTime;
 import java.util.*;

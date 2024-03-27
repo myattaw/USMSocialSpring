@@ -21,5 +21,6 @@ public class PostFormatResponse {
     private List<PostCommentResponse> comments;
     private LocalDateTime timestamp;
     private int likeCount;
+    private boolean isLiked;
 
 }
