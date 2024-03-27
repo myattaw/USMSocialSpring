@@ -48,6 +48,7 @@ public class PostController {
                 @RequestParam(name = "datetime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
                 @RequestParam Integer pageNumber,
                 @RequestParam Integer pageSize) {
+
         if (dateTime == null) {
                 dateTime = LocalDateTime.now();
         }

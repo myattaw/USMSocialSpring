@@ -26,7 +26,7 @@ public class UserGroups {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_groups_mapping", // Name of the join table
+            name = "usm_social_groups_mapping", // Name of the join table
             joinColumns = @JoinColumn(name = "group_id"), // Column in the join table referring to this entity (UserGroups)
             inverseJoinColumns = @JoinColumn(name = "user_id") // Column in the join table referring to the other entity (User)
     )

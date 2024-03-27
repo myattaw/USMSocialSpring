@@ -7,7 +7,6 @@ import me.yattaw.usmsocial.user.requests.UserInfoRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
 import me.yattaw.usmsocial.user.responses.UserSearchResponse;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -51,7 +50,7 @@ public class UserController {
 
     @PutMapping("/profile")
     public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfoRequest request) {
-        return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+        return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
                 new UserInfo(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getTagLine(), request.getBio())));
     }
 
@@ -71,16 +70,11 @@ public class UserController {
         );
     }
 
-    @PostMapping("/message/{id}")
-    public ResponseEntity<String> messageUser(@PathVariable String id) {
-        return ResponseEntity.ok("not implemented yet");
-    }
-
     @PostMapping("/report")
     public ResponseEntity<UserActionResponse> reportId(@RequestBody UserReportRequest request) {
         return ResponseEntity.ok(
                 service.reportId(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                request)
+                        request)
         );
     }
 
