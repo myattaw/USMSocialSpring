@@ -2,7 +2,7 @@ package me.yattaw.usmsocial.post;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.auth.AuthenticationHelper;
+import me.yattaw.usmsocial.auth.AuthenticationService;
 import me.yattaw.usmsocial.entities.post.PostComment;
 import me.yattaw.usmsocial.entities.post.PostLike;
 import me.yattaw.usmsocial.entities.user.Role;
@@ -45,6 +45,7 @@ public class PostService {
     private final CommentRepository commentRepository;
 
     private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
 
     private Optional<User> getCurrentUser(HttpServletRequest servletRequest) {
         String token = jwtService.extractToken(servletRequest);
@@ -60,8 +61,6 @@ public class PostService {
 
         for (PostFormatResponse post : posts) {
                 Integer count = likeRepository.getCountOfUserAndPostLikes(user.get().getId(), post.getId());
-                System.out.println("Fetched");
-                System.out.println(count);
                 post.setLiked((count > 0));
         }
     }
@@ -145,7 +144,7 @@ public class PostService {
     }
 
     public ResponseEntity<PostFormatResponse> getPost(HttpServletRequest servletRequest, Integer id) {
-        AuthenticationHelper.isAuthorizedAccess(servletRequest, jwtService, userRepository);
+        authenticationService.isAuthorizedAccess(servletRequest, jwtService, userRepository);
         UserPost post = postRepository.getReferenceById(id);
         PostFormatResponse postReturn = this.mapToSimplifiedPostResponse(post);
 

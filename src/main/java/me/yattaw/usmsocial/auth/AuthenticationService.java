@@ -1,13 +1,16 @@
 package me.yattaw.usmsocial.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import me.yattaw.usmsocial.service.EmailSenderService;
 import me.yattaw.usmsocial.entities.user.Role;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.repositories.UserRepository;
+import me.yattaw.usmsocial.service.EmailSenderService;
 import me.yattaw.usmsocial.service.JwtService;
+import me.yattaw.usmsocial.user.responses.AuthenicationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -119,5 +122,25 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+
+    public Optional<User> getCurrentUser(
+            HttpServletRequest servletRequest,
+            JwtService jwtService, UserRepository userRepository
+    ) {
+        String token = jwtService.extractToken(servletRequest);
+        return userRepository.findByEmail(jwtService.fetchEmail(token));
+    }
+
+    public void isAuthorizedAccess(
+            HttpServletRequest servletRequest,
+            JwtService jwtService, UserRepository userRepository
+    ) throws AuthenticationException {
+        Optional<User> userRequesting = getCurrentUser(servletRequest, jwtService, userRepository);
+
+        if (userRequesting.isEmpty() || userRequesting.get().getRole() == Role.GUEST) {
+            throw new AuthenicationException("Only users can access");
+        }
+    }
+
 
 }
