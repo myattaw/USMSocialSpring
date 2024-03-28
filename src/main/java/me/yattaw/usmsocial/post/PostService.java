@@ -2,6 +2,7 @@ package me.yattaw.usmsocial.post;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import me.yattaw.usmsocial.auth.AuthenticationHelper;
 import me.yattaw.usmsocial.entities.post.PostComment;
 import me.yattaw.usmsocial.entities.post.PostLike;
 import me.yattaw.usmsocial.entities.user.Role;
@@ -141,6 +142,14 @@ public class PostService {
                 .message("Comment has been created successfully!")
                 .build();
 
+    }
+
+    public ResponseEntity<PostFormatResponse> getPost(HttpServletRequest servletRequest, Integer id) {
+        AuthenticationHelper.isAuthorizedAccess(servletRequest, jwtService, userRepository);
+        UserPost post = postRepository.getReferenceById(id);
+        PostFormatResponse postReturn = this.mapToSimplifiedPostResponse(post);
+
+        return ResponseEntity.ok(postReturn);
     }
 
     public ResponseEntity<PostResponse> getRecommendedPosts(
