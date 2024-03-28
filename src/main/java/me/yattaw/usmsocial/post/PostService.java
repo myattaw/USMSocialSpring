@@ -144,7 +144,7 @@ public class PostService {
     }
 
     public ResponseEntity<PostFormatResponse> getPost(HttpServletRequest servletRequest, Integer id) {
-        authenticationService.isAuthorizedAccess(servletRequest, jwtService, userRepository);
+        authenticationService.isAuthorizedAccess(servletRequest);
         UserPost post = postRepository.getReferenceById(id);
         PostFormatResponse postReturn = this.mapToSimplifiedPostResponse(post);
 

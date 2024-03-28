@@ -124,18 +124,16 @@ public class AuthenticationService {
     }
 
     public Optional<User> getCurrentUser(
-            HttpServletRequest servletRequest,
-            JwtService jwtService, UserRepository userRepository
+            HttpServletRequest servletRequest
     ) {
         String token = jwtService.extractToken(servletRequest);
         return userRepository.findByEmail(jwtService.fetchEmail(token));
     }
 
     public void isAuthorizedAccess(
-            HttpServletRequest servletRequest,
-            JwtService jwtService, UserRepository userRepository
+            HttpServletRequest servletRequest
     ) throws AuthenticationException {
-        Optional<User> userRequesting = getCurrentUser(servletRequest, jwtService, userRepository);
+        Optional<User> userRequesting = getCurrentUser(servletRequest);
 
         if (userRequesting.isEmpty() || userRequesting.get().getRole() == Role.GUEST) {
             throw new AuthenicationException("Only users can access");
