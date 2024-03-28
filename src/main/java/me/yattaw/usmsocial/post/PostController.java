@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.requests.UserRequest;
+import me.yattaw.usmsocial.post.response.PostFormatResponse;
 import me.yattaw.usmsocial.post.response.PostNewInfoResponse;
 import me.yattaw.usmsocial.post.response.PostNewResponse;
 import me.yattaw.usmsocial.post.response.PostResponse;
@@ -74,6 +75,11 @@ public class PostController {
         LocalDateTime serverLocalTime = LocalDateTime.now();
 
         return ResponseEntity.ok(service.getNewRecommendedPostsCount(lastFetchDateTime, serverLocalTime));
+    }
+
+    @GetMapping("/session/{id}")
+    public ResponseEntity<ResponseEntity<PostFormatResponse>> getPostContent(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getPost(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), id));
     }
 
     @GetMapping("/user/{id}")
