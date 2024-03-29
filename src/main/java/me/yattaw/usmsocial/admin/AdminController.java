@@ -2,10 +2,7 @@ package me.yattaw.usmsocial.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -14,18 +11,26 @@ public class AdminController {
 
     private final AdminService service;
 
-    @DeleteMapping("/delete_user")
+    @DeleteMapping("/delete/user")
     public ResponseEntity<AdminActionResponse> deleteUser(
             @RequestBody AdminDeleteRequest request
     ) {
         return ResponseEntity.ok(service.deleteUser(request));
     }
 
-    @DeleteMapping("/delete_post")
+    @DeleteMapping("/delete/post")
     public ResponseEntity<AdminActionResponse> deletePost(
             @RequestBody AdminDeleteRequest request
     ) {
         return ResponseEntity.ok(service.deletePost(request));
     }
+
+    @GetMapping("/reports/{reportType}")
+    public ResponseEntity<String> viewReports(
+            @PathVariable String reportType
+    ) {
+        return ResponseEntity.ok("not implemented yet");
+    }
+
 
 }
