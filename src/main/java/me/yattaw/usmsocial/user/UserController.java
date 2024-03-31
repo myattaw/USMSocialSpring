@@ -4,16 +4,19 @@ import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.report.UserReportRequest;
 import me.yattaw.usmsocial.entities.user.UserInfo;
 import me.yattaw.usmsocial.user.requests.UserInfoRequest;
+import me.yattaw.usmsocial.user.requests.UserProfileUpload;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+import me.yattaw.usmsocial.user.responses.UserProfilePicture;
 import me.yattaw.usmsocial.user.responses.UserSearchResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -23,11 +26,26 @@ public class UserController {
     private final UserService service;
 
     @PatchMapping("/profile_picture")
-    public ResponseEntity<UserActionResponse> changeProfilePicture(@RequestPart("imageData") MultipartFile imageData) throws IOException {
+    public ResponseEntity<UserActionResponse> changeProfilePicture(
+            @RequestBody UserProfileUpload profileUpload) {
+
+        String imageBase64 = profileUpload.getImageBase64();
+
+        if (imageBase64.contains(",")) {
+            imageBase64 = imageBase64.split(",")[1];
+        }
+
+        byte[] decodedBytes = Base64.getDecoder().decode(imageBase64.getBytes(StandardCharsets.UTF_8));;
+
         return ResponseEntity.ok(service.uploadProfilePicture(
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                imageData.getBytes()
+                decodedBytes
         ));
+    }
+
+    @GetMapping("/profile_picture")
+    public ResponseEntity<UserProfilePicture> getProfilePicture() {
+        return ResponseEntity.ok(service.getProfilePicture(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
     }
 
     @GetMapping("/info/{id}")
@@ -51,7 +69,7 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfoRequest request) {
         return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
-                new UserInfo(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getTagLine(), request.getBio())));
+                new UserInfo(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getTagLine(), request.getBio(), "")));
     }
 
     @PostMapping("/follow/{id}")

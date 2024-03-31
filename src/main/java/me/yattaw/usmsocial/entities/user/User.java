@@ -12,9 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -101,12 +98,20 @@ public class User implements UserDetails {
         return true;
     }
 
+    public String getBase64ProfilePicture() {
+        String encodedString = "";
+        if (profilePicture != null && profilePicture.length != 0) {
+            encodedString = Base64.getEncoder().encodeToString(profilePicture);
+        }
+        return encodedString;
+    }
+
     public PostUserInfo getPostUserInfo() {
-        return new PostUserInfo(id, firstName, lastName, email, tagLine);
+        return new PostUserInfo(id, firstName, lastName, email, tagLine, getBase64ProfilePicture());
     }
 
     public UserInfo getUserInfo() {
-        return new UserInfo(id, firstName, lastName, email, tagLine, bio);
+        return new UserInfo(id, firstName, lastName, email, tagLine, bio, getBase64ProfilePicture());
     }
 
     public void generateVerificationToken() {
