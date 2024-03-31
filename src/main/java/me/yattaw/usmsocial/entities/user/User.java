@@ -53,15 +53,6 @@ public class User implements UserDetails {
     @ManyToMany(mappedBy = "members", fetch = FetchType.LAZY)
     private Set<UserGroups> groups;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DirectMessage> sentMessages;
-
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DirectMessage> receivedMessages;
-
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<GroupMessage> sentGroupMessages;
-
     private String verificationToken;
 
     private boolean verified;
