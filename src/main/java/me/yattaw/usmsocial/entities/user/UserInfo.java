@@ -13,9 +13,10 @@ public class UserInfo extends PostUserInfo {
         String lastName,
         String email,
         String tagLine,
-        String bio
+        String bio,
+        String imageBase64
     ) {
-        super(id, firstName, lastName, email, tagLine);
+        super(id, firstName, lastName, email, tagLine, imageBase64);
         this.bio = bio;
     }
 }

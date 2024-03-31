@@ -16,6 +16,7 @@ import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.AuthenicationException;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
+import me.yattaw.usmsocial.user.responses.UserProfilePicture;
 import me.yattaw.usmsocial.user.responses.UserSearch;
 import me.yattaw.usmsocial.user.responses.UserSearchResponse;
 
@@ -73,6 +74,12 @@ public class UserService {
         Optional<User> user = getCurrentUser(servletRequest);
 
         return UserInfoResponse.builder().user(user.get().getUserInfo()).build();
+    }
+
+    public UserProfilePicture getProfilePicture(HttpServletRequest servletRequest) {
+        Optional<User> user = getCurrentUser(servletRequest);
+
+        return UserProfilePicture.builder().imageBase64((user.isEmpty()) ? "" : user.get().getBase64ProfilePicture()).build();
     }
 
     public UserActionResponse setProfileUserInfo(HttpServletRequest servletRequest, UserInfo userInfo) {
@@ -144,6 +151,7 @@ public class UserService {
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .base64Image(user.getBase64ProfilePicture())
                 .build();
     }
 
