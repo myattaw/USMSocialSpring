@@ -3,6 +3,7 @@ package me.yattaw.usmsocial.messages;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.messages.request.MessageSendRequest;
+import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -34,17 +35,9 @@ public class MessageController {
      */
     @GetMapping("/fetch/user/{senderId}")
     public ResponseEntity<String> getMessages(
-            @PathVariable String senderId
+            @PathVariable Integer senderId
     ) {
         // Implementation pending
-        return ResponseEntity.ok("not implemented yet");
-    }
-
-
-    @PostMapping("/share/{userId}/{messageId}")
-    public ResponseEntity<String> shareMessage(
-            @PathVariable String userId, @PathVariable String messageId
-    ) {
         return ResponseEntity.ok("not implemented yet");
     }
 
@@ -60,10 +53,16 @@ public class MessageController {
      * @return ResponseEntity containing a success message if the operation was successful.
      */
     @PostMapping("/user/{id}")
-    public ResponseEntity<String> messageUser(@PathVariable String id, @RequestBody MessageSendRequest request) {
-        // Implementation pending
-        return ResponseEntity.ok("not implemented yet");
+    public ResponseEntity<UserActionResponse> messageUser(
+            @RequestBody MessageSendRequest request,
+            @PathVariable Integer id
+    ) {
+        return ResponseEntity.ok(service.messageUser(
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                        request,
+                        id
+                )
+        );
     }
-
 
 }
