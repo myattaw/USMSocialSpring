@@ -1,10 +1,7 @@
 package me.yattaw.usmsocial.entities.user;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import me.yattaw.usmsocial.entities.message.DirectMessage;
 import me.yattaw.usmsocial.entities.message.GroupMessage;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,11 +16,13 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "usm_social_users")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
 
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(length = 32)
@@ -32,6 +31,7 @@ public class User implements UserDetails {
     @Column(length = 32)
     private String lastName;
 
+    @EqualsAndHashCode.Include
     private String email;
 
     @Column(length = 64)
