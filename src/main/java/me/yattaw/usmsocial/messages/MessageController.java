@@ -22,13 +22,6 @@ public class MessageController {
         return ResponseEntity.ok("not implemented yet");
     }
 
-    @GetMapping("/fetch/group/{groupId}")
-    public ResponseEntity<String> getGroupMessages(
-            @PathVariable String groupId
-    ) {
-        return ResponseEntity.ok("not implemented yet");
-    }
-
     /**
      * Retrieves messages for a specific user identified by the senderId.
      *
@@ -62,7 +55,7 @@ public class MessageController {
      * <p>Retrieves the user identified by the id path variable and sends a message to the user
      * based on the contents specified in the request body.</p>s
      *
-     * @param id The ID of the user to whom the message will be sent.
+     * @param id      The ID of the user to whom the message will be sent.
      * @param request The request containing the message contents.
      * @return ResponseEntity containing a success message if the operation was successful.
      */
@@ -72,21 +65,5 @@ public class MessageController {
         return ResponseEntity.ok("not implemented yet");
     }
 
-
-    /**
-     * Sends a message to a group identified by the provided groupId.
-     *
-     * <p> Retrieves the group identified by the groupId path variable and adds the message contents
-     * specified in the request body to the group.</p>
-     *
-     * @param groupId The ID of the group to which the message will be sent.
-     * @param request The request containing the message contents.
-     * @return ResponseEntity containing a success message if the operation was successful.
-     */
-    @PostMapping("/group/{groupId}")
-    public ResponseEntity<String> messageGroup(@PathVariable String groupId, @RequestBody MessageSendRequest request) {
-        // Implementation pending
-        return ResponseEntity.ok("not implemented yet");
-    }
 
 }

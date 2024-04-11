@@ -21,4 +21,6 @@ spring:
 
 logging:
   level:
-    web: debug
+#    root: DEBUG
+    org.springframework.web: DEBUG
+    org.apache.catalina.core: DEBUG

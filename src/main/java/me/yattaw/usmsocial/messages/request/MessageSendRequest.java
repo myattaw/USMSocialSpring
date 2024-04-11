@@ -1,13 +1,16 @@
 package me.yattaw.usmsocial.messages.request;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MessageSendRequest {
 
-   private int Id;
-   private String content;
-
-   // TODO: Enable timestamps once we add time validator for requests.
-   // private LocalDateTime timestamp;
+    private String content;
 
 }

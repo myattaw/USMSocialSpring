@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(AUTHORIZED_URLS).permitAll()
-                                .requestMatchers("/api/v1/user/**", "/api/v1/post/**").hasAnyAuthority(
+                                .requestMatchers("/api/v1/user/**", "/api/v1/message/**", "/api/v1/post/**").hasAnyAuthority(
                                         STUDENT.getAuthority(), ALUMNI.getAuthority(), STAFF.getAuthority(),
                                         FACULTY.getAuthority(), ADMIN.getAuthority()
                                 )
