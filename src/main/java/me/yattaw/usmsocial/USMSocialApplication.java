@@ -8,6 +8,8 @@ import me.yattaw.usmsocial.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,8 +23,9 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
 @RequiredArgsConstructor
+@EntityScan("me.yattaw.usmsocial.entities")
 public class USMSocialApplication {
 
     public static void main(String[] args) {

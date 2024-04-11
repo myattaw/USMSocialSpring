@@ -34,9 +34,16 @@ public class GroupMessageController {
      * @return ResponseEntity containing a success message if the operation was successful.
      */
     @PostMapping("/group/{groupId}")
-    public ResponseEntity<String> messageGroup(@PathVariable String groupId, @RequestBody MessageSendRequest request) {
-        // Implementation pending
-        return ResponseEntity.ok("not implemented yet");
+    public ResponseEntity<UserActionResponse> messageGroup(
+            @RequestBody MessageSendRequest request,
+            @PathVariable Integer groupId
+    ) {
+        return ResponseEntity.ok(service.messageGroup(
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                        request,
+                        groupId
+                )
+        );
     }
 
     @PostMapping("/create/group")

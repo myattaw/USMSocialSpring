@@ -15,9 +15,9 @@ import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +47,7 @@ public class GroupMessageService {
                     .build();
         }
 
-        Set<User> groupMembers = new HashSet<>();
+        List<User> groupMembers = new ArrayList<>();
         groupMembers.add(user.get());
 
         UserGroups group = UserGroups.builder()
@@ -63,6 +63,48 @@ public class GroupMessageService {
         return UserActionResponse.builder()
                 .status(1)
                 .message("Post has been created successfully!")
+                .build();
+    }
+
+    public UserActionResponse messageGroup(
+            HttpServletRequest servletRequest,
+            MessageSendRequest request,
+            Integer id
+    ) {
+        String token = jwtService.extractToken(servletRequest);
+
+        Optional<User> user = userRepository.findByEmail(
+                jwtService.fetchEmail(token)
+        );
+
+        // This should only happen if a user was deleted
+        if (user.isEmpty()) {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Unable to authorize the user token.")
+                    .build();
+        }
+
+        Optional<UserGroups> group = userGroupRepository.findById(id);
+        if (group.isPresent() && group.get().getMembers().contains(user.get())) {
+            GroupMessage groupMessage = GroupMessage.builder()
+                    .group(group.get())
+                    .message(request.getContent())
+                    .sender(user.get())
+                    .timestamp(LocalDateTime.now())
+                    .build();
+
+            groupMessageRepository.save(groupMessage);
+        } else {
+            return UserActionResponse.builder()
+                    .status(0)
+                    .message("Unable to access the group.")
+                    .build();
+        }
+
+        return UserActionResponse.builder()
+                .status(1)
+                .message("Group message has been sent successfully!")
                 .build();
     }
 

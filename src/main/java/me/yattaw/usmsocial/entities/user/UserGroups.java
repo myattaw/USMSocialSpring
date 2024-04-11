@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -30,7 +30,7 @@ public class UserGroups {
             joinColumns = @JoinColumn(name = "group_id"), // Column in the join table referring to this entity (UserGroups)
             inverseJoinColumns = @JoinColumn(name = "user_id") // Column in the join table referring to the other entity (User)
     )
-    private Set<User> members;
+    private List<User> members;
 
 
     private LocalDateTime timestamp;

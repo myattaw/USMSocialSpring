@@ -24,3 +24,5 @@ logging:
 #    root: DEBUG
     org.springframework.web: DEBUG
     org.apache.catalina.core: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.data.jpa: DEBUG
