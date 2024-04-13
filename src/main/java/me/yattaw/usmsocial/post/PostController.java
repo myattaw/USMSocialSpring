@@ -8,6 +8,7 @@ import me.yattaw.usmsocial.post.response.PostFormatResponse;
 import me.yattaw.usmsocial.post.response.PostNewInfoResponse;
 import me.yattaw.usmsocial.post.response.PostNewResponse;
 import me.yattaw.usmsocial.post.response.PostResponse;
+import me.yattaw.usmsocial.post.response.PostUserCountResponse;
 
 import java.time.LocalDateTime;
 
@@ -112,6 +113,11 @@ public class PostController {
         LocalDateTime serverLocalTime = LocalDateTime.now();
 
         return ResponseEntity.ok(service.getNewUserPostCount(id, lastFetchDateTime, serverLocalTime));
+    }
+
+    @GetMapping("/count/user/{id}")
+    public ResponseEntity<ResponseEntity<PostUserCountResponse>> getUserPostCount(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getUserPostCount(id));
     }
 
     @PostMapping("/like")

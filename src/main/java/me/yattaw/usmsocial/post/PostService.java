@@ -22,6 +22,7 @@ import me.yattaw.usmsocial.post.response.PostFormatResponse;
 import me.yattaw.usmsocial.post.response.PostNewInfoResponse;
 import me.yattaw.usmsocial.post.response.PostNewResponse;
 import me.yattaw.usmsocial.post.response.PostResponse;
+import me.yattaw.usmsocial.post.response.PostUserCountResponse;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -236,6 +237,14 @@ public class PostService {
                         .amountOfNewPost(newCount)
                         .lastFetchDateTime(fetchDataTime)
                         .serverDateTime(serverDateTime).build());
+    }
+
+    public ResponseEntity<PostUserCountResponse> getUserPostCount(
+            Integer userId
+    ) {
+            Integer count = postRepository.getUserPostCount(userId);
+
+            return ResponseEntity.ok(PostUserCountResponse.builder().count(count).build());
     }
 
     private PostFormatResponse mapToSimplifiedPostResponse(UserPost post) {
