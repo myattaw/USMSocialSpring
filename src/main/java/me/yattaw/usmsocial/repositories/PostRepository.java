@@ -52,4 +52,9 @@ public interface PostRepository extends JpaRepository<UserPost, Integer> {
         value = "SELECT * FROM usm_social_posts WHERE user_id = :userId AND timestamp <= :datetime", 
         nativeQuery = true)
     Page<UserPost> getUserPosts(@Param("userId") Integer userId, @Param("datetime") LocalDateTime datetime, Pageable pageable);
+
+    @Query(
+        value = "SELECT COUNT(*) FROM usm_social_posts WHERE user_id = :userId",
+        nativeQuery = true)
+    Integer getUserPostCount(@Param("userId") Integer userId);
 }

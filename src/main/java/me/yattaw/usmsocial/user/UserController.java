@@ -6,6 +6,9 @@ import me.yattaw.usmsocial.entities.user.UserInfo;
 import me.yattaw.usmsocial.user.requests.UserInfoRequest;
 import me.yattaw.usmsocial.user.requests.UserProfileUpload;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import me.yattaw.usmsocial.user.responses.UserFollowListResponse;
+import me.yattaw.usmsocial.user.responses.UserFollowerCountResponse;
+import me.yattaw.usmsocial.user.responses.UserFollowingCountResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
 import me.yattaw.usmsocial.user.responses.UserProfilePicture;
 import me.yattaw.usmsocial.user.responses.UserSearchResponse;
@@ -85,6 +88,46 @@ public class UserController {
         return ResponseEntity.ok(service.unfollowUser(
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
                 id)
+        );
+    }
+
+    @GetMapping("/count/followings/{id}")
+    public ResponseEntity<UserFollowingCountResponse> followingsUserCount(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getFollowingsCount(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+                id));
+    }
+
+    @GetMapping("/count/followers/{id}")
+    public ResponseEntity<UserFollowerCountResponse> followersUserCount(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.getFollowersCount(
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+                id));
+    }
+
+    @GetMapping("/followers/{id}")
+    public ResponseEntity<UserFollowListResponse> getUserFollowers(
+        @PathVariable Integer id,
+        @RequestParam Integer pageNumber,
+        @RequestParam Integer pageSize) {
+        return ResponseEntity.ok(service.getFollowers(
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+            id, 
+            pageNumber, 
+            pageSize)
+        );
+    }
+
+    @GetMapping("/followings/{id}")
+    public ResponseEntity<UserFollowListResponse> getUserFollowings(
+        @PathVariable Integer id,
+        @RequestParam Integer pageNumber,
+        @RequestParam Integer pageSize) {
+        return ResponseEntity.ok(service.getFollowings(
+            ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), 
+            id, 
+            pageNumber, 
+            pageSize)
         );
     }
 

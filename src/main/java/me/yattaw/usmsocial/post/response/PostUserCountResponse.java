@@ -1,6 +1,4 @@
-package me.yattaw.usmsocial.user.responses;
-
-import org.springframework.data.domain.Page;
+package me.yattaw.usmsocial.post.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSearchResponse {
-    Page<UserSearch> users;
+public class PostUserCountResponse {
+    private Integer count;
 }

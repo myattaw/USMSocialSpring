@@ -15,6 +15,9 @@ import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.AuthenicationException;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import me.yattaw.usmsocial.user.responses.UserFollowListResponse;
+import me.yattaw.usmsocial.user.responses.UserFollowerCountResponse;
+import me.yattaw.usmsocial.user.responses.UserFollowingCountResponse;
 import me.yattaw.usmsocial.user.responses.UserInfoResponse;
 import me.yattaw.usmsocial.user.responses.UserProfilePicture;
 import me.yattaw.usmsocial.user.responses.UserSearch;
@@ -60,7 +63,9 @@ public class UserService {
 
         Optional<User> userProfile = userRepository.findById(userId);
 
-        boolean isFollowing = !followerRepository.getUserFollowerEachOther(userProfile.get().getId(), userFetching.get().getId()).isEmpty();
+        int count = followerRepository.getUserFollowerEachOtherCount(userFetching.get().getId(), userProfile.get().getId());
+        System.out.println(count);
+        boolean isFollowing = count > 0;
         boolean isOwnProfile = userProfile.get().getId() == userFetching.get().getId();
         
         return UserInfoResponse.builder()
@@ -155,6 +160,14 @@ public class UserService {
                 .build();
     }
 
+    private UserSearch mapToSearchUserResponse(Integer userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        return (user.isEmpty()) ?
+             UserSearch.builder().base64Image("").firstName("Deleted").lastName("").build() :
+             UserSearch.builder().firstName(user.get().getFirstName()).lastName(user.get().getLastName()).id(user.get().getId()).base64Image(user.get().getBase64ProfilePicture()).build();
+    }
+
     public UserActionResponse followUser(HttpServletRequest servletRequest, Integer followingId) {
         return handleUserAction(servletRequest, followingId, true);
     }
@@ -195,6 +208,42 @@ public class UserService {
                 .status(1)
                 .message("User has successfully updated profile picture!")
                 .build();
+    }
+
+    public UserFollowerCountResponse getFollowersCount(HttpServletRequest servletRequest, int userId) {
+        isAuthorizedAccess(servletRequest);
+        int count = followerRepository.getCountFollowers(userId);
+
+        return UserFollowerCountResponse.builder().followerCount(count).build();
+    }
+
+    public UserFollowingCountResponse getFollowingsCount(HttpServletRequest servletRequest, int userId) {
+        isAuthorizedAccess(servletRequest);
+        int count = followerRepository.getCountFollowings(userId);
+
+        return UserFollowingCountResponse.builder().followingCount(count).build();
+    }
+
+    public UserFollowListResponse getFollowers(HttpServletRequest servletRequest, int userId, int pageNumber, int pageSize) {
+        isAuthorizedAccess(servletRequest);
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+
+        Page<Integer> usersResult = followerRepository.getUserFollowers(userId, pageRequest);
+        Page<UserSearch> userSearched =  usersResult.map(this::mapToSearchUserResponse);
+
+        return UserFollowListResponse.builder().userFollowList(userSearched).build();
+    }
+
+    public UserFollowListResponse getFollowings(HttpServletRequest servletRequest, int userId, int pageNumber, int pageSize) {
+        isAuthorizedAccess(servletRequest);
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+
+        Page<Integer> usersResult = followerRepository.getUserFollowings(userId, pageRequest);
+        Page<UserSearch> userSearched =  usersResult.map(this::mapToSearchUserResponse);
+
+        return UserFollowListResponse.builder().userFollowList(userSearched).build();
     }
 
     public UserActionResponse reportId(HttpServletRequest request, UserReportRequest reportRequest) {

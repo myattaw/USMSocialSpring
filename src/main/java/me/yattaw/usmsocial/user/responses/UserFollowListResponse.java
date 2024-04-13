@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSearchResponse {
-    Page<UserSearch> users;
+public class UserFollowListResponse {
+    Page<UserSearch> userFollowList;
 }
