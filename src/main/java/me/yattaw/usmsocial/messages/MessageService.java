@@ -85,15 +85,19 @@ public class MessageService {
         List<RecentMessageInfo> recentMessages = new ArrayList<>();
         users.forEach(messageUser -> {
             Optional<DirectMessage> message = dmRepository.findLastMessageBetweenUsers(user.get(), messageUser);
-            message.ifPresent(directMessage -> recentMessages.add(
+            message.ifPresent(dm -> recentMessages.add(
                     RecentMessageInfo.builder()
                             .userId(messageUser.getId())
                             .firstName(messageUser.getFirstName())
                             .lastName(messageUser.getLastName())
                             .tagLine(messageUser.getTagLine())
                             .base64Image(messageUser.getBase64ProfilePicture())
-                            .lastMessage(directMessage.getMessage())
-                            .timestamp(directMessage.getTimestamp())
+                            .lastMessage(dm.getMessage())
+                            .lastSenderFullName(
+                                    dm.getSender().getFirstName() + " " + dm.getSender().getLastName()
+                            )
+                            .lastSenderId(dm.getSender().getId())
+                            .timestamp(dm.getTimestamp())
                             .build()
             ));
         });

@@ -19,6 +19,8 @@ public class RecentMessageInfo {
     private String tagLine;
     private String base64Image;
     private String lastMessage;
+    private String lastSenderFullName;
+    private Integer lastSenderId;
     private LocalDateTime timestamp;
 
 }
