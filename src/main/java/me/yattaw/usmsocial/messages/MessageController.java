@@ -1,13 +1,15 @@
 package me.yattaw.usmsocial.messages;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.messages.request.MessageSendRequest;
+import me.yattaw.usmsocial.messages.response.RecentMessageInfo;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/message")
@@ -17,10 +19,11 @@ public class MessageController {
     private final MessageService service;
 
     @GetMapping("/recent/")
-    public ResponseEntity<String> getRecentMessages() {
-        HttpServletRequest requestAttributes =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        return ResponseEntity.ok("not implemented yet");
+    public ResponseEntity<List<RecentMessageInfo>> getRecentMessages() {
+        return ResponseEntity.ok(service.getRecentMessages(
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
+                )
+        );
     }
 
     /**

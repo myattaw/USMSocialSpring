@@ -2,8 +2,6 @@ package me.yattaw.usmsocial.entities.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import me.yattaw.usmsocial.entities.message.DirectMessage;
-import me.yattaw.usmsocial.entities.message.GroupMessage;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

@@ -25,7 +25,6 @@ import java.util.Base64;
 @Slf4j
 @SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
 @RequiredArgsConstructor
-@EntityScan("me.yattaw.usmsocial.entities")
 public class USMSocialApplication {
 
     public static void main(String[] args) {
