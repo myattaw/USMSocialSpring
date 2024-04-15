@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RecentMessageInfo {
 
+    private Integer userId;
     private String firstName;
     private String lastName;
     private String tagLine;

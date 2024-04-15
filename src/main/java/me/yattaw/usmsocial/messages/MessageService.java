@@ -87,6 +87,7 @@ public class MessageService {
             Optional<DirectMessage> message = dmRepository.findLastMessageBetweenUsers(user.get(), messageUser);
             message.ifPresent(directMessage -> recentMessages.add(
                     RecentMessageInfo.builder()
+                            .userId(messageUser.getId())
                             .firstName(messageUser.getFirstName())
                             .lastName(messageUser.getLastName())
                             .tagLine(messageUser.getTagLine())
