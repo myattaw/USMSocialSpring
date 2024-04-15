@@ -55,4 +55,18 @@ public class GroupMessageController {
         );
     }
 
+    @PostMapping("/invite/{groupId}/{userId}")
+    public ResponseEntity<UserActionResponse> inviteGroupMember(
+            @PathVariable Integer groupId,
+            @PathVariable Integer userId
+    ) {
+        return ResponseEntity.ok(service.inviteGroupMember(
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                        groupId,
+                        userId
+                )
+        );
+    }
+
+
 }
