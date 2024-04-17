@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 /**
  * Defines the properties of a <code>PostLike</code>.
  * <code>PostLikes</code> are stored in the table <code>usm_social_post_likes</code>.
+ * @version 17 April 2024
  */
 @Data
 @Entity

@@ -16,7 +16,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+/**
+ * Service responsible for handling authentication-related operations.
+ *
+ * <p>
+ * This service manages user registration, authentication, and authorization processes.
+ * </p>
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -27,6 +35,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailSenderService senderService;
 
+    /**
+     * Registers a user based on the provided registration request.
+     *
+     * @param request The registration request containing user details.
+     * @return An authentication response containing the generated JWT token.
+     */
     public AuthenticationResponse register(RegisterRequest request) {
 
         if (request.isOAuthRegistration()) {
@@ -74,6 +88,12 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     * Handles the registration process for OAuth users.
+     *
+     * @param request The registration request containing OAuth user details.
+     * @return The user entity representing the registered OAuth user.
+     */
     private User handleOAuthRegistration(RegisterRequest request) {
         // Extract user information from the OAuth response
         String email = request.getEmail(); // or retrieve from OAuth response
@@ -102,7 +122,14 @@ public class AuthenticationService {
         }
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    /**
+     * Authenticates a user based on the provided authentication request.
+     *
+     * @param request The authentication request containing user credentials.
+     * @return An authentication response containing the generated JWT token.
+     * @throws AuthenticationException If authentication fails.
+     */
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws AuthenticationException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -123,6 +150,12 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * Retrieves the currently authenticated user based on the provided HTTP servlet request.
+     *
+     * @param servletRequest The HTTP servlet request containing the user's authentication token.
+     * @return An optional containing the currently authenticated user, or empty if not authenticated.
+     */
     public Optional<User> getCurrentUser(
             HttpServletRequest servletRequest
     ) {
@@ -130,6 +163,12 @@ public class AuthenticationService {
         return userRepository.findByEmail(jwtService.fetchEmail(token));
     }
 
+    /**
+     * Checks if the user associated with the provided HTTP servlet request is authorized to access the resource.
+     *
+     * @param servletRequest The HTTP servlet request containing the user's authentication token.
+     * @throws AuthenticationException If the user is not authorized to access the resource.
+     */
     public void isAuthorizedAccess(
             HttpServletRequest servletRequest
     ) throws AuthenticationException {
@@ -139,6 +178,5 @@ public class AuthenticationService {
             throw new AuthenicationException("Only users can access");
         }
     }
-
 
 }

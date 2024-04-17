@@ -9,11 +9,20 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
-
+/**
+ * Configuration class for asynchronous task execution, enabling asynchronous
+ * processing.
+ *
+ * @version 17 April 2024
+ */
 @Configuration
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
+    /**
+     * Retrieves the asynchronous task executor bean.
+     * @return An instance of ThreadPoolTaskExecutor configured for asynchronous task execution.
+     */
     @Override
     @Bean(name = "emailExecutor")
     public Executor getAsyncExecutor() {
@@ -26,6 +35,10 @@ public class AsyncConfig implements AsyncConfigurer {
         return executor;
     }
 
+    /**
+     * Retrieves the asynchronous uncaught exception handler.
+     * @return An instance of SimpleAsyncUncaughtExceptionHandler for handling uncaught exceptions.
+     */
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return new SimpleAsyncUncaughtExceptionHandler();

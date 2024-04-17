@@ -7,7 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
+/**
+ * Represents the relationship between users where one user follows another.
+ *
+ * @version 17 April 2024
+ */
 @Data
 @Entity
 @Builder
@@ -16,11 +20,21 @@ import java.time.LocalDateTime;
 @Table(name = "usm_social_followers")
 public class UserFollowers {
 
+    /**
+     * The composite key representing the follower and the user being followed.
+     */
     @EmbeddedId
     private UserFollowerId id;
 
+    /**
+     * The timestamp indicating when the follow action occurred.
+     */
     private LocalDateTime timestamp;
 
+    /**
+     * Validates that the follower and following users are not the same.
+     * Throws an IllegalStateException if they are the same.
+     */
     @PrePersist
     @PreUpdate
     private void validateUsers() {

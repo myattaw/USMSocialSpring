@@ -11,7 +11,32 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
-
+/**
+ * Controller for handling message-related operations.
+ *
+ * <p>This controller provides endpoints for retrieving recent messages, fetching messages for a
+ * specific user,
+ * and sending messages to users.</p>
+ *
+ * <p>Endpoints:
+ * <ul>
+ *     <li>GET /api/v1/message/recent/: Retrieves recent messages.</li>
+ *     <li>GET /api/v1/message/fetch/user/{senderId}: Retrieves messages for a specific user.</li>
+ *     <li>POST /api/v1/message/user/{id}: Sends a message to a user identified by the provided user
+ *     ID.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>The controller relies on the {@link MessageService} for handling message-related operations.</p>
+ *
+ * {@code @RestController} indicates that this class is a REST controller.
+ * {@code @RequestMapping("/api/v1/message")} specifies the base URL path for mapping requests handled
+ * by this controller.
+ * {@code @RequiredArgsConstructor} is a Lombok annotation to generate a constructor with required
+ * arguments.
+ *
+ * @version 17 April 2024
+ */
 @RestController
 @RequestMapping("/api/v1/message")
 @RequiredArgsConstructor
@@ -19,12 +44,18 @@ public class MessageController {
 
     private final MessageService service;
 
+    /**
+     * Retrieves recent messages.
+     *
+     * <p>This endpoint retrieves recent messages for the current user.</p>
+     *
+     * @return ResponseEntity containing a list of RecentMessageInfo objects representing recent messages.
+     */
     @GetMapping("/recent/")
     public ResponseEntity<List<RecentMessageInfo>> getRecentMessages() {
         return ResponseEntity.ok(service.getRecentMessages(
-                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
-                )
-        );
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
+        ));
     }
 
     /**
