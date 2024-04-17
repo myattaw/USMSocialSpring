@@ -2,6 +2,7 @@ package me.yattaw.usmsocial.messages;
 
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.messages.request.MessageSendRequest;
+import me.yattaw.usmsocial.messages.response.MessageResponse;
 import me.yattaw.usmsocial.messages.response.RecentMessageInfo;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.http.ResponseEntity;
@@ -37,11 +38,14 @@ public class MessageController {
      * @return ResponseEntity containing a success message if the operation was successful.
      */
     @GetMapping("/fetch/user/{senderId}")
-    public ResponseEntity<String> getMessages(
+    public ResponseEntity<List<MessageResponse>> getMessages(
             @PathVariable Integer senderId
     ) {
-        // Implementation pending
-        return ResponseEntity.ok("not implemented yet");
+        return ResponseEntity.ok(service.getMessages(
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                        senderId
+                )
+        );
     }
 
 

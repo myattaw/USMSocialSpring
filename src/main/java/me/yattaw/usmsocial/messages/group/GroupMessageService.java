@@ -6,18 +6,18 @@ import me.yattaw.usmsocial.entities.message.GroupMessage;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.entities.user.UserGroups;
 import me.yattaw.usmsocial.messages.request.MessageSendRequest;
+import me.yattaw.usmsocial.messages.response.MessageResponse;
 import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.repositories.GroupMessageRepository;
 import me.yattaw.usmsocial.repositories.UserGroupRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +27,40 @@ public class GroupMessageService {
     private final UserGroupRepository userGroupRepository;
     private final GroupMessageRepository groupMessageRepository;
     private final JwtService jwtService;
+
+    public List<MessageResponse> getGroupMessages(HttpServletRequest servletRequest, Integer groupId) {
+
+        String token = jwtService.extractToken(servletRequest);
+
+        Optional<User> user = userRepository.findByEmail(
+                jwtService.fetchEmail(token)
+        );
+
+        // This should only happen if a user was deleted
+        if (user.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Optional<UserGroups> userGroup = userGroupRepository.findById(groupId);
+        if (userGroup.isPresent()) {
+            List<MessageResponse> responseList = new ArrayList<>();
+            List<GroupMessage> messages = groupMessageRepository.findTop30ByOrderByTimestampDesc(Pageable.ofSize(30));
+            messages.forEach(message -> {
+                responseList.add(
+                        MessageResponse.builder()
+                                .userId(message.getSender().getId())
+                                .firstName(message.getSender().getFirstName())
+                                .lastName(message.getSender().getLastName())
+                                .content(message.getMessage())
+                                .timestamp(message.getTimestamp())
+                                .build()
+                );
+            });
+            return responseList;
+        }
+
+        return Collections.emptyList();
+    }
 
     public UserActionResponse createGroup(
             HttpServletRequest servletRequest,
