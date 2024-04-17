@@ -115,9 +115,9 @@ public class User implements UserDetails {
     @PrePersist
     @PreUpdate
     public void validateEmail() {
-//        if (!email.equals("admin") && !email.toLowerCase().endsWith("@maine.edu")) {
-//            throw new IllegalStateException("Email must be from the maine.edu domain.");
-//        }
+        if (!email.equals("admin") && !email.toLowerCase().endsWith("@maine.edu")) {
+            throw new IllegalStateException("Email must be from the maine.edu domain.");
+        }
     }
 
 }
