@@ -36,6 +36,11 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * Service class providing various operations related to user management.
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -45,11 +50,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
+    /**
+     * Retrieves the current user based on the JWT token extracted from the servlet request.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @return Optional containing the current user, if found.
+     */
     private Optional<User> getCurrentUser(HttpServletRequest servletRequest) {
         String token = jwtService.extractToken(servletRequest);
         return userRepository.findByEmail(jwtService.fetchEmail(token));
     }
 
+    /**
+     * Checks if the current user has authorized access.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @throws AuthenticationException if the user is not authorized.
+     */
     private void isAuthorizedAccess(HttpServletRequest servletRequest) throws AuthenticationException {
         Optional<User> userRequesting = getCurrentUser(servletRequest);
 
@@ -57,7 +74,14 @@ public class UserService {
             throw new AuthenicationException("Only users can access");
         }
     }
-    
+
+    /**
+     * Retrieves the information of a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param userId         The ID of the user to retrieve information for.
+     * @return UserInfoResponse containing the user information.
+     */
     public UserInfoResponse getUserInfo(HttpServletRequest servletRequest, Integer userId) {
         Optional<User> userFetching = getCurrentUser(servletRequest);
 
@@ -75,18 +99,37 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * Retrieves the profile information of the current user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @return UserInfoResponse containing the profile information.
+     */
     public UserInfoResponse getProfileUserInfo(HttpServletRequest servletRequest) {
         Optional<User> user = getCurrentUser(servletRequest);
 
         return UserInfoResponse.builder().user(user.get().getUserInfo()).build();
     }
 
+    /**
+     * Retrieves the profile picture of the current user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @return UserProfilePicture containing the profile picture.
+     */
     public UserProfilePicture getProfilePicture(HttpServletRequest servletRequest) {
         Optional<User> user = getCurrentUser(servletRequest);
 
         return UserProfilePicture.builder().imageBase64((user.isEmpty()) ? "" : user.get().getBase64ProfilePicture()).build();
     }
 
+    /**
+     * Sets the profile information of the current user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param userInfo       The updated user information.
+     * @return UserActionResponse indicating the status of the operation.
+     */
     public UserActionResponse setProfileUserInfo(HttpServletRequest servletRequest, UserInfo userInfo) {
         Optional<User> user = getCurrentUser(servletRequest);
 
@@ -103,6 +146,15 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * Searches for users based on the provided query.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param searchQuery    The search query.
+     * @param pageNumber     The page number.
+     * @param pageSize       The page size.
+     * @return UserSearchResponse containing the search results.
+     */
     public UserSearchResponse getUserSearch(HttpServletRequest servletRequest, 
             String searchQuery, Integer pageNumber, Integer pageSize) {
         isAuthorizedAccess(servletRequest);
@@ -119,6 +171,14 @@ public class UserService {
         return UserSearchResponse.builder().users(users).build();
     }
 
+    /**
+     * Handles follow and unfollow actions for a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param followingId    The ID of the user being followed/unfollowed.
+     * @param isFollow       Indicates whether the action is follow (true) or unfollow (false).
+     * @return UserActionResponse indicating the status of the action.
+     */
     private UserActionResponse handleUserAction(HttpServletRequest servletRequest, Integer followingId, boolean isFollow) {
         Optional<User> user = getCurrentUser(servletRequest);
 
@@ -151,6 +211,12 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * Maps a User entity to a UserSearch object.
+     *
+     * @param user The User entity to map.
+     * @return UserSearch object containing mapped data.
+     */
     private UserSearch mapToSearchUserResponse(User user) {
         return UserSearch.builder()
                 .id(user.getId())
@@ -160,6 +226,12 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * Maps a user ID to a UserSearch object.
+     *
+     * @param userId The user ID to map.
+     * @return UserSearch object containing mapped data.
+     */
     private UserSearch mapToSearchUserResponse(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
 
@@ -168,14 +240,35 @@ public class UserService {
              UserSearch.builder().firstName(user.get().getFirstName()).lastName(user.get().getLastName()).id(user.get().getId()).base64Image(user.get().getBase64ProfilePicture()).build();
     }
 
+    /**
+     * Initiates the follow action for a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param followingId    The ID of the user to follow.
+     * @return UserActionResponse indicating the status of the follow action.
+     */
     public UserActionResponse followUser(HttpServletRequest servletRequest, Integer followingId) {
         return handleUserAction(servletRequest, followingId, true);
     }
 
+    /**
+     * Initiates the unfollow action for a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param followingId    The ID of the user to unfollow.
+     * @return UserActionResponse indicating the status of the unfollow action.
+     */
     public UserActionResponse unfollowUser(HttpServletRequest servletRequest, Integer followingId) {
         return handleUserAction(servletRequest, followingId, false);
     }
 
+    /**
+     * Uploads a profile picture for the current user.
+     *
+     * @param request   The HTTP request.
+     * @param imageData The profile picture image data.
+     * @return UserActionResponse indicating the status of the profile picture upload.
+     */
     public UserActionResponse uploadProfilePicture(HttpServletRequest request, byte[] imageData) {
         Optional<User> user = getCurrentUser(request);
 
@@ -210,6 +303,13 @@ public class UserService {
                 .build();
     }
 
+    /**
+     * Retrieves the count of followers for a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param userId         The ID of the user to retrieve follower count for.
+     * @return UserFollowerCountResponse containing the follower count.
+     */
     public UserFollowerCountResponse getFollowersCount(HttpServletRequest servletRequest, int userId) {
         isAuthorizedAccess(servletRequest);
         int count = followerRepository.getCountFollowers(userId);
@@ -217,6 +317,13 @@ public class UserService {
         return UserFollowerCountResponse.builder().followerCount(count).build();
     }
 
+    /**
+     * Retrieves the count of users followed by a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param userId         The ID of the user to retrieve following count for.
+     * @return UserFollowingCountResponse containing the following count.
+     */
     public UserFollowingCountResponse getFollowingsCount(HttpServletRequest servletRequest, int userId) {
         isAuthorizedAccess(servletRequest);
         int count = followerRepository.getCountFollowings(userId);
@@ -224,6 +331,15 @@ public class UserService {
         return UserFollowingCountResponse.builder().followingCount(count).build();
     }
 
+    /**
+     * Retrieves the list of followers for a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param userId         The ID of the user to retrieve followers for.
+     * @param pageNumber     The page number.
+     * @param pageSize       The page size.
+     * @return UserFollowListResponse containing the list of followers.
+     */
     public UserFollowListResponse getFollowers(HttpServletRequest servletRequest, int userId, int pageNumber, int pageSize) {
         isAuthorizedAccess(servletRequest);
 
@@ -235,6 +351,15 @@ public class UserService {
         return UserFollowListResponse.builder().userFollowList(userSearched).build();
     }
 
+    /**
+     * Retrieves the list of users followed by a user.
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param userId         The ID of the user to retrieve followed users for.
+     * @param pageNumber     The page number.
+     * @param pageSize       The page size.
+     * @return UserFollowListResponse containing the list of followed users.
+     */
     public UserFollowListResponse getFollowings(HttpServletRequest servletRequest, int userId, int pageNumber, int pageSize) {
         isAuthorizedAccess(servletRequest);
 
@@ -246,6 +371,13 @@ public class UserService {
         return UserFollowListResponse.builder().userFollowList(userSearched).build();
     }
 
+    /**
+     * Reports a user.
+     *
+     * @param request      The HTTP request.
+     * @param reportRequest The user report request.
+     * @return UserActionResponse indicating the status of the report action.
+     */
     public UserActionResponse reportId(HttpServletRequest request, UserReportRequest reportRequest) {
         Optional<User> user = getCurrentUser(request);
 
@@ -273,6 +405,12 @@ public class UserService {
                 ).build();
     }
 
+    /**
+     * Checks if the provided image data represents a valid image format.
+     *
+     * @param imageData The image data.
+     * @return True if the image format is valid, otherwise false.
+     */
     private boolean isValidImageFormat(byte[] imageData) {
         try (InputStream inputStream = new ByteArrayInputStream(imageData)) {
             ImageIO.read(inputStream);

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 /**
  * Defines the properties of a <code>PostComment</code>.
  * <code>PostComments</code> are stored in the table <code>usm_social_post_comments</code>.
+ * @version 17 April 2024
  */
 @Data
 @Entity

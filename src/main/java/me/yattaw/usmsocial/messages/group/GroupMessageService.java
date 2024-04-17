@@ -19,6 +19,18 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Provides services for handling group messaging operations.
+ *
+ * <p>This service class contains methods to fetch group messages, send messages to groups,
+ * create new groups, and invite members to existing groups.</p>
+ *
+ * {@code @Service} indicates that this class is a service component in the application.
+ * {@code @RequiredArgsConstructor} generates a constructor with required arguments for the
+ * injected dependencies.
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class GroupMessageService {
@@ -28,13 +40,18 @@ public class GroupMessageService {
     private final GroupMessageRepository groupMessageRepository;
     private final JwtService jwtService;
 
+    /**
+     * Retrieves messages for a specific group.
+     *
+     * <p>This method fetches messages belonging to the group identified by the provided groupId.</p>
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param groupId The ID of the group for which messages will be retrieved.
+     * @return List of MessageResponse objects containing messages if the operation was successful.
+     */
     public List<MessageResponse> getGroupMessages(HttpServletRequest servletRequest, Integer groupId) {
-
         String token = jwtService.extractToken(servletRequest);
-
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
+        Optional<User> user = userRepository.findByEmail(jwtService.fetchEmail(token));
 
         // This should only happen if a user was deleted
         if (user.isEmpty()) {
@@ -62,16 +79,18 @@ public class GroupMessageService {
         return Collections.emptyList();
     }
 
-    public UserActionResponse createGroup(
-            HttpServletRequest servletRequest,
-            UserPostRequest request
-    ) {
-
+    /**
+     * Creates a new group based on the provided request.
+     *
+     * <p>This method creates a new group using the details provided in the request body.</p>
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param request The request containing the details of the group to be created.
+     * @return UserActionResponse indicating the success or failure of the operation.
+     */
+    public UserActionResponse createGroup(HttpServletRequest servletRequest, UserPostRequest request) {
         String token = jwtService.extractToken(servletRequest);
-
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
+        Optional<User> user = userRepository.findByEmail(jwtService.fetchEmail(token));
 
         // This should only happen if a user was deleted
         if (user.isEmpty()) {
@@ -85,9 +104,7 @@ public class GroupMessageService {
         groupMembers.add(user.get());
 
         UserGroups group = UserGroups.builder()
-                .name(request.getContent().isEmpty() ?
-                        "Untitled Group" : request.getContent()
-                )
+                .name(request.getContent().isEmpty() ? "Untitled Group" : request.getContent())
                 .members(groupMembers)
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -100,16 +117,20 @@ public class GroupMessageService {
                 .build();
     }
 
-    public UserActionResponse inviteGroupMember(
-            HttpServletRequest servletRequest,
-            Integer groupId,
-            Integer userId
-    ) {
+    /**
+     * Invites a user to join a specific group.
+     *
+     * <p>This method sends an invitation to the user identified by the provided userId
+     * to join the group identified by the provided groupId.</p>
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param groupId The ID of the group to which the user will be invited.
+     * @param userId The ID of the user to be invited.
+     * @return UserActionResponse indicating the success or failure of the operation.
+     */
+    public UserActionResponse inviteGroupMember(HttpServletRequest servletRequest, Integer groupId, Integer userId) {
         String token = jwtService.extractToken(servletRequest);
-
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
+        Optional<User> user = userRepository.findByEmail(jwtService.fetchEmail(token));
 
         // This should only happen if a user was deleted
         if (user.isEmpty()) {
@@ -126,13 +147,8 @@ public class GroupMessageService {
             group.get().getMembers().add(invitedUser.get());
             return UserActionResponse.builder()
                     .status(1)
-                    .message(String.format(
-                                    "Successfully invited %s %s to '%s' group.",
-                                    invitedUser.get().getFirstName(),
-                                    invitedUser.get().getLastName(),
-                                    group.get().getName()
-                            )
-                    )
+                    .message(String.format("Successfully invited %s %s to '%s' group.",
+                            invitedUser.get().getFirstName(), invitedUser.get().getLastName(), group.get().getName()))
                     .build();
         }
 
@@ -142,16 +158,20 @@ public class GroupMessageService {
                 .build();
     }
 
-    public UserActionResponse messageGroup(
-            HttpServletRequest servletRequest,
-            MessageSendRequest request,
-            Integer id
-    ) {
+    /**
+     * Sends a message to a group identified by the provided groupId.
+     *
+     * <p>This method retrieves the group identified by the groupId path variable and adds the message contents
+     * specified in the request body to the group.</p>
+     *
+     * @param servletRequest The HTTP servlet request.
+     * @param request The request containing the message contents.
+     * @param id The ID of the group to which the message will be sent.
+     * @return UserActionResponse indicating the success or failure of the operation.
+     */
+    public UserActionResponse messageGroup(HttpServletRequest servletRequest, MessageSendRequest request, Integer id) {
         String token = jwtService.extractToken(servletRequest);
-
-        Optional<User> user = userRepository.findByEmail(
-                jwtService.fetchEmail(token)
-        );
+        Optional<User> user = userRepository.findByEmail(jwtService.fetchEmail(token));
 
         // This should only happen if a user was deleted
         if (user.isEmpty()) {
@@ -183,5 +203,4 @@ public class GroupMessageService {
                 .message("Group message has been sent successfully!")
                 .build();
     }
-
 }

@@ -19,7 +19,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * Service class for managing message-related operations.
+ *
+ * <p>This service class provides methods for sending messages to users, retrieving recent messages,
+ * and fetching messages between specific users.</p>
+ *
+ * <p>The service relies on the {@link UserRepository} and {@link DirectMessageRepository}
+ * for accessing user and direct message data, respectively.</p>
+ *
+ * <p>It also uses the {@link JwtService} to handle JSON Web Token operations.</p>
+ *
+ * {@code @Service} indicates that this class is a service component in the Spring application context.
+ * {@code @RequiredArgsConstructor} is a Lombok annotation to generate a constructor with required arguments.
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class MessageService {
@@ -28,6 +43,17 @@ public class MessageService {
     private final DirectMessageRepository dmRepository;
     private final JwtService jwtService;
 
+    /**
+     * Sends a message to the user identified by the provided user ID.
+     *
+     * <p>Retrieves the user identified by the id path variable and sends a message to the user
+     * based on the contents specified in the request body.</p>
+     *
+     * @param servletRequest The servlet request containing the JWT token.
+     * @param request        The request containing the message contents.
+     * @param id             The ID of the user to whom the message will be sent.
+     * @return UserActionResponse indicating the success or failure of the operation.
+     */
     public UserActionResponse messageUser(
             HttpServletRequest servletRequest,
             MessageSendRequest request,
@@ -71,6 +97,12 @@ public class MessageService {
 
     }
 
+    /**
+     * Retrieves recent messages for the current user.
+     *
+     * @param request The servlet request containing the JWT token.
+     * @return List of RecentMessageInfo representing recent messages.
+     */
     public List<RecentMessageInfo> getRecentMessages(HttpServletRequest request) {
 
         String token = jwtService.extractToken(request);
@@ -108,6 +140,13 @@ public class MessageService {
         return recentMessages;
     }
 
+    /**
+     * Retrieves messages between the current user and a specified user.
+     *
+     * @param request   The servlet request containing the JWT token.
+     * @param senderId  The ID of the sender user.
+     * @return List of MessageResponse representing messages between the users.
+     */
     public List<MessageResponse> getMessages(HttpServletRequest request, Integer senderId) {
 
         String token = jwtService.extractToken(request);
@@ -141,6 +180,6 @@ public class MessageService {
                         .build()
         )));
 
-        return Collections.emptyList();
+        return messageResponses;
     }
 }

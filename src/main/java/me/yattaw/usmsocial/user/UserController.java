@@ -21,6 +21,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * Controller class that handles user-related HTTP requests.
+ *
+ * @version 17 April 2024
+ */
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -28,6 +33,12 @@ public class UserController {
 
     private final UserService service;
 
+    /**
+     * Changes the profile picture of the user.
+     *
+     * @param profileUpload The profile picture upload request.
+     * @return ResponseEntity containing the action response.
+     */
     @PatchMapping("/profile_picture")
     public ResponseEntity<UserActionResponse> changeProfilePicture(
             @RequestBody UserProfileUpload profileUpload) {
@@ -46,21 +57,45 @@ public class UserController {
         ));
     }
 
+    /**
+     * Retrieves the profile picture of the user.
+     *
+     * @return ResponseEntity containing the profile picture.
+     */
     @GetMapping("/profile_picture")
     public ResponseEntity<UserProfilePicture> getProfilePicture() {
         return ResponseEntity.ok(service.getProfilePicture(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
     }
 
+    /**
+     * Retrieves user information by user ID.
+     *
+     * @param id The ID of the user.
+     * @return ResponseEntity containing the user information response.
+     */
     @GetMapping("/info/{id}")
     public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), id));
     }
 
+    /**
+     * Retrieves user profile information.
+     *
+     * @return ResponseEntity containing the user profile information response.
+     */
     @GetMapping("/profile")
     public ResponseEntity<UserInfoResponse> getUserProfile() {
         return ResponseEntity.ok(service.getProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()));
     }
 
+    /**
+     * Searches for users based on the provided query string.
+     *
+     * @param query      The query string for user search.
+     * @param pageNumber The page number for pagination.
+     * @param pageSize   The page size for pagination.
+     * @return ResponseEntity containing the user search response.
+     */
     @GetMapping("/search")
     public ResponseEntity<UserSearchResponse> getUserSearch(
             @RequestParam String query,
@@ -69,12 +104,24 @@ public class UserController {
         return ResponseEntity.ok(service.getUserSearch(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(), query, pageNumber, pageSize));
     }
 
+    /**
+     * Updates user profile information.
+     *
+     * @param request The user profile update request.
+     * @return ResponseEntity containing the action response.
+     */
     @PutMapping("/profile")
     public ResponseEntity<UserActionResponse> patchUserProfile(@RequestBody UserInfoRequest request) {
         return ResponseEntity.ok(service.setProfileUserInfo(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
                 new UserInfo(request.getId(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getTagLine(), request.getBio(), "")));
     }
 
+    /**
+     * Follows a user with the specified ID.
+     *
+     * @param id The ID of the user to follow.
+     * @return ResponseEntity containing the action response.
+     */
     @PostMapping("/follow/{id}")
     public ResponseEntity<UserActionResponse> followUser(@PathVariable Integer id) {
         return ResponseEntity.ok(service.followUser(
@@ -83,6 +130,12 @@ public class UserController {
         );
     }
 
+    /**
+     * Unfollows a user with the specified ID.
+     *
+     * @param id The ID of the user to unfollow.
+     * @return ResponseEntity containing the action response.
+     */
     @DeleteMapping("/unfollow/{id}")
     public ResponseEntity<UserActionResponse> unfollowUser(@PathVariable Integer id) {
         return ResponseEntity.ok(service.unfollowUser(
@@ -91,6 +144,12 @@ public class UserController {
         );
     }
 
+    /**
+     * Retrieves the count of users followed by the user with the specified ID.
+     *
+     * @param id The ID of the user.
+     * @return ResponseEntity containing the following count response.
+     */
     @GetMapping("/count/followings/{id}")
     public ResponseEntity<UserFollowingCountResponse> followingsUserCount(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getFollowingsCount(
@@ -98,6 +157,12 @@ public class UserController {
                 id));
     }
 
+    /**
+     * Retrieves the count of followers of the user with the specified ID.
+     *
+     * @param id The ID of the user.
+     * @return ResponseEntity containing the follower count response.
+     */
     @GetMapping("/count/followers/{id}")
     public ResponseEntity<UserFollowerCountResponse> followersUserCount(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getFollowersCount(
@@ -105,6 +170,14 @@ public class UserController {
                 id));
     }
 
+    /**
+     * Retrieves the list of followers of the user with the specified ID.
+     *
+     * @param id         The ID of the user.
+     * @param pageNumber The page number for pagination.
+     * @param pageSize   The page size for pagination.
+     * @return ResponseEntity containing the user follow list response.
+     */
     @GetMapping("/followers/{id}")
     public ResponseEntity<UserFollowListResponse> getUserFollowers(
         @PathVariable Integer id,
@@ -118,6 +191,14 @@ public class UserController {
         );
     }
 
+    /**
+     * Retrieves the list of users followed by the user with the specified ID.
+     *
+     * @param id         The ID of the user.
+     * @param pageNumber The page number for pagination.
+     * @param pageSize   The page size for pagination.
+     * @return ResponseEntity containing the user follow list response.
+     */
     @GetMapping("/followings/{id}")
     public ResponseEntity<UserFollowListResponse> getUserFollowings(
         @PathVariable Integer id,
@@ -131,6 +212,12 @@ public class UserController {
         );
     }
 
+    /**
+     * Reports a user based on the specified report request.
+     *
+     * @param request The user report request.
+     * @return ResponseEntity containing the action response.
+     */
     @PostMapping("/report")
     public ResponseEntity<UserActionResponse> reportId(@RequestBody UserReportRequest request) {
         return ResponseEntity.ok(
