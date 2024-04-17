@@ -5,16 +5,20 @@ import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.entities.message.DirectMessage;
 import me.yattaw.usmsocial.entities.user.User;
 import me.yattaw.usmsocial.messages.request.MessageSendRequest;
+import me.yattaw.usmsocial.messages.response.MessageResponse;
 import me.yattaw.usmsocial.messages.response.RecentMessageInfo;
 import me.yattaw.usmsocial.repositories.DirectMessageRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -102,5 +106,41 @@ public class MessageService {
             ));
         });
         return recentMessages;
+    }
+
+    public List<MessageResponse> getMessages(HttpServletRequest request, Integer senderId) {
+
+        String token = jwtService.extractToken(request);
+
+        Optional<User> sender = userRepository.findByEmail(
+                jwtService.fetchEmail(token)
+        );
+
+        Optional<User> receiver = userRepository.findById(senderId);
+
+        // This should only happen if a user was deleted
+        if (sender.isEmpty() || receiver.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Grab the last 100 messages between users
+        Optional<List<DirectMessage>> messageList = dmRepository.findMessagesBetweenUsers(
+                sender.get(),
+                receiver.get(),
+                Pageable.ofSize(100)
+        );
+
+        List<MessageResponse> messageResponses = new ArrayList<>();
+        messageList.ifPresent(directMessages -> directMessages.forEach(dm -> messageResponses.add(
+                MessageResponse.builder()
+                        .userId(dm.getSender().getId())
+                        .firstName(dm.getSender().getFirstName())
+                        .lastName(dm.getSender().getLastName())
+                        .content(dm.getMessage())
+                        .timestamp(dm.getTimestamp())
+                        .build()
+        )));
+
+        return Collections.emptyList();
     }
 }
