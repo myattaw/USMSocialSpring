@@ -2,12 +2,15 @@ package me.yattaw.usmsocial.messages.group;
 
 import lombok.RequiredArgsConstructor;
 import me.yattaw.usmsocial.messages.request.MessageSendRequest;
+import me.yattaw.usmsocial.messages.response.MessageResponse;
 import me.yattaw.usmsocial.post.request.UserPostRequest;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/message")
@@ -17,10 +20,14 @@ public class GroupMessageController {
     private final GroupMessageService service;
 
     @GetMapping("/fetch/group/{groupId}")
-    public ResponseEntity<String> getGroupMessages(
-            @PathVariable String groupId
+    public ResponseEntity<List<MessageResponse>> getGroupMessages(
+            @PathVariable Integer groupId
     ) {
-        return ResponseEntity.ok("not implemented yet");
+        return ResponseEntity.ok(
+                service.getGroupMessages(
+                        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest(),
+                        groupId)
+        );
     }
 
     /**
