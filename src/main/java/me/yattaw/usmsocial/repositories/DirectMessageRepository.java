@@ -9,17 +9,39 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * Repository interface for managing direct messages in the database.
+ */
 public interface DirectMessageRepository extends JpaRepository<DirectMessage, Integer> {
 
+    /**
+     * Retrieves a list of users who have received messages from a specific user.
+     *
+     * @param user The user whose messages are being queried.
+     * @return A list of users who have received messages from the specified user.
+     */
     @Query("SELECT dm.receiver FROM DirectMessage dm WHERE dm.sender = :user")
     List<User> findUsersWithMessagesFromUser(User user);
 
+    /**
+     * Retrieves the last message exchanged between two users.
+     *
+     * @param user1 The first user.
+     * @param user2 The second user.
+     * @return Optional containing the last message between the two users, if any.
+     */
     @Query("SELECT dm FROM DirectMessage dm WHERE (dm.sender = :user1 AND dm.receiver = :user2) OR (dm.sender = :user2 AND dm.receiver = :user1) ORDER BY dm.timestamp DESC")
     Optional<DirectMessage> findLastMessageBetweenUsers(User user1, User user2);
 
+    /**
+     * Retrieves a list of messages exchanged between two users.
+     *
+     * @param user1    The first user.
+     * @param user2    The second user.
+     * @param pageable Pageable object for pagination.
+     * @return Optional containing a list of messages between the two users, if any.
+     */
     @Query("SELECT dm FROM DirectMessage dm WHERE (dm.sender = :user1 AND dm.receiver = :user2) OR (dm.sender = :user2 AND dm.receiver = :user1) ORDER BY dm.timestamp DESC")
     Optional<List<DirectMessage>> findMessagesBetweenUsers(User user1, User user2, Pageable pageable);
-
 
 }

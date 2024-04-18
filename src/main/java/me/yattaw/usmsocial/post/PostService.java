@@ -36,6 +36,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service class that handles operations related to posts.
+ * <p>
+ * This class is annotated with {@code @Service} to indicate that it is a Spring-managed service component.
+ * </p>
+ *
+ * <p>
+ * The {@code @RequiredArgsConstructor} annotation is used to automatically generate a constructor
+ * that initializes all final fields with arguments.
+ * </p>
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -48,11 +61,23 @@ public class PostService {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
+    /**
+     * Retrieves the current user from the request.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @return Optional of the current user if found, otherwise empty.
+     */
     private Optional<User> getCurrentUser(HttpServletRequest servletRequest) {
         String token = jwtService.extractToken(servletRequest);
         return userRepository.findByEmail(jwtService.fetchEmail(token));
     }
 
+    /**
+     * Updates the 'liked' status of posts for the current user.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param posts           The posts to update.
+     */
     public void updateIsLiked(HttpServletRequest servletRequest, Iterable<PostFormatResponse> posts) {
         Optional<User> user = getCurrentUser(servletRequest);
 
@@ -66,6 +91,13 @@ public class PostService {
         }
     }
 
+    /**
+     * Creates a new post.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param request         The request containing the post content.
+     * @return UserActionResponse indicating the result of the operation.
+     */
     public UserActionResponse createPost(
             HttpServletRequest servletRequest,
             UserPostRequest request
@@ -100,6 +132,13 @@ public class PostService {
 
     }
 
+    /**
+     * Creates a new comment on a post.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param request         The request containing the comment content.
+     * @return UserActionResponse indicating the result of the operation.
+     */
     public UserActionResponse createComment(
             HttpServletRequest servletRequest,
             UserPostRequest request
@@ -144,6 +183,13 @@ public class PostService {
 
     }
 
+    /**
+     * Retrieves the content of a post.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param id             The ID of the post to retrieve.
+     * @return ResponseEntity containing the post content.
+     */
     public ResponseEntity<PostFormatResponse> getPost(HttpServletRequest servletRequest, Integer id) {
         authenticationService.isAuthorizedAccess(servletRequest);
         UserPost post = postRepository.getReferenceById(id);
@@ -152,6 +198,15 @@ public class PostService {
         return ResponseEntity.ok(postReturn);
     }
 
+    /**
+     * Retrieves recommended posts.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param dateTime       The date and time for retrieving recommended posts.
+     * @param pageNumber     The page number for pagination.
+     * @param pageSize       The size of each page for pagination.
+     * @return ResponseEntity containing recommended posts.
+     */
     public ResponseEntity<PostResponse> getRecommendedPosts(
         HttpServletRequest servletRequest,
         LocalDateTime dateTime, Integer pageNumber, Integer pageSize
@@ -169,6 +224,14 @@ public class PostService {
                         .build());
     }
 
+    /**
+     * Retrieves new recommended posts.
+     *
+     * @param servletRequest  The servlet request containing the user token.
+     * @param fetchDataTime   The last fetch date and time for retrieving new recommended posts.
+     * @param serverDateTime  The current server date and time.
+     * @return ResponseEntity containing new recommended posts.
+     */
     public ResponseEntity<PostNewResponse> getNewRecommendedPosts(
         HttpServletRequest servletRequest,
         LocalDateTime fetchDataTime,
@@ -186,6 +249,13 @@ public class PostService {
                         .build());
     }
 
+    /**
+     * Retrieves the count of new recommended posts.
+     *
+     * @param fetchDataTime  The last fetch date and time for retrieving the count of new recommended posts.
+     * @param serverDateTime The current server date and time.
+     * @return ResponseEntity containing the count of new recommended posts.
+     */
     public ResponseEntity<PostNewInfoResponse> getNewRecommendedPostsCount(
         LocalDateTime fetchDataTime,
         LocalDateTime serverDateTime
@@ -198,6 +268,16 @@ public class PostService {
                         .serverDateTime(serverDateTime).build());
     }
 
+    /**
+     * Retrieves posts created by a specific user.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param userId         The ID of the user.
+     * @param dateTime       The date and time for retrieving user posts.
+     * @param pageNumber     The page number for pagination.
+     * @param pageSize       The size of each page for pagination.
+     * @return ResponseEntity containing user posts.
+     */
     public ResponseEntity<PostResponse> getUserPosts(
                 HttpServletRequest servletRequest,
                 Integer userId, LocalDateTime dateTime, Integer pageNumber, Integer pageSize) {
@@ -209,6 +289,15 @@ public class PostService {
         return ResponseEntity.ok(PostResponse.builder().pageResult(pageResult).dateTimeFetch(dateTime).build());
     }
 
+    /**
+     * Retrieves new posts created by a specific user.
+     *
+     * @param servletRequest  The servlet request containing the user token.
+     * @param userId          The ID of the user.
+     * @param fetchDataTime   The last fetch date and time for retrieving new user posts.
+     * @param serverDateTime  The current server date and time.
+     * @return ResponseEntity containing new user posts.
+     */
     public ResponseEntity<PostNewResponse> getNewUserPost(
         HttpServletRequest servletRequest,
         Integer userId,
@@ -226,6 +315,14 @@ public class PostService {
                         .build());
     }
 
+    /**
+     * Retrieves the count of new posts created by a specific user.
+     *
+     * @param userId          The ID of the user.
+     * @param fetchDataTime   The last fetch date and time for retrieving the count of new user posts.
+     * @param serverDateTime  The current server date and time.
+     * @return ResponseEntity containing the count of new user posts.
+     */
     public ResponseEntity<PostNewInfoResponse> getNewUserPostCount(
         Integer userId,
         LocalDateTime fetchDataTime,
@@ -239,6 +336,12 @@ public class PostService {
                         .serverDateTime(serverDateTime).build());
     }
 
+    /**
+     * Retrieves the count of posts created by a specific user.
+     *
+     * @param userId The ID of the user.
+     * @return ResponseEntity containing the count of user posts.
+     */
     public ResponseEntity<PostUserCountResponse> getUserPostCount(
             Integer userId
     ) {
@@ -247,6 +350,7 @@ public class PostService {
             return ResponseEntity.ok(PostUserCountResponse.builder().count(count).build());
     }
 
+    //helper method
     private PostFormatResponse mapToSimplifiedPostResponse(UserPost post) {
 
         return PostFormatResponse.builder()
@@ -269,6 +373,14 @@ public class PostService {
                 .build();
     }
 
+    /**
+     * Adjusts the like status of a post.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param request         The request containing the post ID and like action.
+     * @param addLike         A boolean indicating whether to add or remove the like.
+     * @return UserActionResponse indicating the result of the operation.
+     */
     public UserActionResponse adjustPostLike(
             HttpServletRequest servletRequest,
             UserRequest request,
@@ -333,6 +445,13 @@ public class PostService {
                 .build();
     }
 
+    /**
+     * Deletes a post.
+     *
+     * @param servletRequest The servlet request containing the user token.
+     * @param request         The request containing the post ID.
+     * @return UserActionResponse indicating the result of the operation.
+     */
     public UserActionResponse deletePost(
             HttpServletRequest servletRequest,
             UserRequest request

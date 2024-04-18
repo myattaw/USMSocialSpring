@@ -16,7 +16,24 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * Service class responsible for sending emails to users using the configured JavaMailSender.
+ *
+ * <p>
+ * This class utilizes FreeMarker templates to generate HTML email content.
+ * </p>
+ *
+ * <p>
+ * The {@code @Service} annotation marks this class as a Spring-managed service component.
+ * </p>
+ *
+ * <p>
+ * The {@code @RequiredArgsConstructor} annotation automatically generates a constructor that initializes
+ * all final fields with arguments.
+ * </p>
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class EmailSenderService {
@@ -24,6 +41,15 @@ public class EmailSenderService {
     private final JavaMailSender mailSender;
     private final Configuration freemarkerConfig;
 
+    /**
+     * Asynchronously sends an email to the specified user.
+     *
+     * @param user       The user to whom the email will be sent.
+     * @param subject    The subject of the email.
+     * @param body       The body of the email.
+     * @param verifyLink The verification link included in the email.
+     * @param buttonText The text displayed on the button in the email.
+     */
     @Async
     public void sendEmail(User user, String subject, String body, String verifyLink, String buttonText) {
         try {

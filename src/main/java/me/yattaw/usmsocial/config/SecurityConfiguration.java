@@ -15,7 +15,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static me.yattaw.usmsocial.entities.user.Role.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
+/**
+ * Configuration class responsible for setting up security configurations for the
+ * application.
+ *
+ * @version 17 April 2024
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -32,6 +37,12 @@ public class SecurityConfiguration {
             "/api/v1/test/**"
     };
 
+    /**
+     * Configures security filters and authorization rules for the application.
+     * @param http The HTTP security object.
+     * @return The configured security filter chain.
+     * @throws Exception If an error occurs while configuring security.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -57,6 +68,10 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * Configures CORS (Cross-Origin Resource Sharing) for the application.
+     * @return The configured CORS configuration source.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

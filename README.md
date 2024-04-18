@@ -61,8 +61,8 @@ Start up backend by running `mvn spring-boot:run "-Dspring-boot.run.profiles=dev
 - **Request Body:**
   ```json
   {
-    "email": "user@example.com"
-    "password": "password",
+    "email": "user@example.com",
+    "password": "password"
   }
   ```
 ### Authenticate User
@@ -71,8 +71,8 @@ Start up backend by running `mvn spring-boot:run "-Dspring-boot.run.profiles=dev
 - **Request Body:**
   ```json
   {
-    "email": "user@example.com"
-    "password": "password",
+    "email": "user@example.com",
+    "password": "password"
   }
   ```
 ### Response

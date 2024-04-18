@@ -8,12 +8,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Represents a user in the social network system.
+ *
+ * This class stores information about users, including their personal details,
+ * role in the system, profile picture, and verification status.
+ *
+ * Registering emails are checked for the @maine.edu domain and checked for duplicates.
+ *
+ * @version 17 April 2024
+ */
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "usm_social_users")
+@Table(name = "usm_social_users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
 
@@ -57,36 +67,71 @@ public class User implements UserDetails {
 
     private LocalDateTime timestamp;
 
+    /**
+     * Retrieves the authorities granted to the user.
+     *
+     * @return A collection of authorities granted to the user.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(role.getSimpleGrantedAuthority());
     }
 
+    /**
+     * Retrieves the username used to authenticate the user.
+     *
+     * @return The username used to authenticate the user.
+     */
     @Override
     public String getUsername() {
         return email;
     }
 
+    /**
+     * Indicates whether the user's account has expired.
+     *
+     * @return {@code true} if the user's account is valid (i.e., not expired), {@code false} otherwise.
+     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    /**
+     * Indicates whether the user is locked or unlocked.
+     *
+     * @return {@code true} if the user is not locked, {@code false} otherwise.
+     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    /**
+     * Indicates whether the user's credentials (password) has expired.
+     *
+     * @return {@code true} if the user's credentials are valid (i.e., not expired), {@code false} otherwise.
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    /**
+     * Indicates whether the user is enabled or disabled.
+     *
+     * @return {@code true} if the user is enabled, {@code false} otherwise.
+     */
     @Override
     public boolean isEnabled() {
         return true;
     }
 
+    /**
+     * Retrieves the base64 encoded profile picture of the user.
+     *
+     * @return The base64 encoded profile picture of the user.
+     */
     public String getBase64ProfilePicture() {
         String encodedString = "";
         if (profilePicture != null && profilePicture.length != 0) {
@@ -95,14 +140,27 @@ public class User implements UserDetails {
         return encodedString;
     }
 
+    /**
+     * Retrieves a simplified representation of user information suitable for a post.
+     *
+     * @return A simplified representation of user information suitable for a post.
+     */
     public PostUserInfo getPostUserInfo() {
         return new PostUserInfo(id, firstName, lastName, email, tagLine, getBase64ProfilePicture());
     }
 
+    /**
+     * Retrieves a detailed representation of user information.
+     *
+     * @return A detailed representation of user information.
+     */
     public UserInfo getUserInfo() {
         return new UserInfo(id, firstName, lastName, email, tagLine, bio, getBase64ProfilePicture());
     }
 
+    /**
+     * Generates a verification token for the user.
+     */
     public void generateVerificationToken() {
         String verificationToken = UUID.randomUUID().toString();
         setVerificationToken(verificationToken);

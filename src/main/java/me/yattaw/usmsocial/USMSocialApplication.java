@@ -22,15 +22,38 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
+/**
+ * Main class for the USMSocial application.
+ *
+ * <p>
+ * This class initializes and runs the Spring Boot application for USMSocial.
+ * It also contains a method to create default admin user if no users exist in the database.
+ * </p>
+ *
+ * @version 17 April 2024
+ */
 @Slf4j
 @SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
 @RequiredArgsConstructor
 public class USMSocialApplication {
 
+    /**
+     * Entry point of the application.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         SpringApplication.run(USMSocialApplication.class, args);
     }
 
+    /**
+     * Creates default admin user if no users exist in the database.
+     *
+     * @param jdbcTemplate   The JdbcTemplate for executing SQL queries.
+     * @param encoder        The BCryptPasswordEncoder for encoding passwords.
+     * @param userRepository The repository for accessing user data.
+     * @return A CommandLineRunner that creates the default admin user.
+     */
     @Bean
     public CommandLineRunner createDefaults(
             JdbcTemplate jdbcTemplate,
@@ -58,6 +81,12 @@ public class USMSocialApplication {
         };
     }
 
+    /**
+     * Generates a random string of specified length.
+     *
+     * @param length The length of the random string to generate.
+     * @return The randomly generated string.
+     */
     public static String generateRandomString(int length) {
         SecureRandom secureRandom = new SecureRandom();
         byte[] randomBytes = new byte[length];

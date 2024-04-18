@@ -14,7 +14,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * Service class providing admin-related functionalities.
+ *
+ * <p>
+ * This service class encapsulates operations related to admin actions, such as user and post deletion, and retrieving reports.
+ * </p>
+ *
+ * @version 17 April 2024
+ */
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -25,6 +33,12 @@ public class AdminService {
     private final CommentRepository commentRepository;
     private final ReportRepository reportRepository;
 
+    /**
+     * Deletes a user and related posts.
+     *
+     * @param request The {@link AdminDeleteRequest} containing the ID of the user to be deleted.
+     * @return An {@link AdminActionResponse} indicating the status and outcome of the deletion operation.
+     */
     public AdminActionResponse deleteUser(AdminDeleteRequest request) {
         Optional<User> user = userRepository.findById(request.getTargetId());
 
@@ -47,6 +61,12 @@ public class AdminService {
         }
     }
 
+    /**
+     * Deletes a post and related comments and likes.
+     *
+     * @param request The {@link AdminDeleteRequest} containing the ID of the post to be deleted.
+     * @return An {@link AdminActionResponse} indicating the status and outcome of the deletion operation.
+     */
     public AdminActionResponse deletePost(AdminDeleteRequest request) {
         Optional<UserPost> userPost = postRepository.findById(request.getTargetId());
 
@@ -68,6 +88,12 @@ public class AdminService {
         }
     }
 
+    /**
+     * Retrieves reports based on the specified report type.
+     *
+     * @param reportType The {@link ReportType} indicating the type of reports to retrieve.
+     * @return A list of {@link UserReportResponse} objects containing information about the reported entities.
+     */
     public List<UserReportResponse> getReports(ReportType reportType) {
         List<UserReport> reports = reportRepository.findAllReports(reportType);
         if (!reports.isEmpty()) {
@@ -109,6 +135,7 @@ public class AdminService {
                     }
                 }
             });
+            return userReportResponses;
         }
         return Collections.emptyList();
     }
