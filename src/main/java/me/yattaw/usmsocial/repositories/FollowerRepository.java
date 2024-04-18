@@ -32,8 +32,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      * @return Page containing the IDs of users who follow the specified user.
      */
     @Query(
-            value = "SELECT following_id FROM usm_social_followers WHERE follower_id = :followerId",
-            nativeQuery = true)
+        value = "SELECT follower_id FROM usm_social_followers WHERE following_id = :followerId",
+        nativeQuery = true)
     Page<Integer> getUserFollowers(@Param("followerId") Integer followerId, Pageable pageable);
 
     /**
@@ -44,8 +44,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      * @return Page containing the IDs of users followed by the specified user.
      */
     @Query(
-            value = "SELECT follower_id FROM usm_social_followers WHERE following_id = :followingId",
-            nativeQuery = true)
+        value = "SELECT following_id FROM usm_social_followers WHERE follower_id = :followingId",
+        nativeQuery = true)
     Page<Integer> getUserFollowings(@Param("followingId") Integer followingId, Pageable pageable);
 
     /**
@@ -55,8 +55,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      * @return The count of users followed by the specified user.
      */
     @Query(
-            value = "SELECT COUNT(*) FROM usm_social_followers WHERE following_id = :followingId",
-            nativeQuery = true)
+        value = "SELECT COUNT(*) FROM usm_social_followers WHERE follower_id = :followingId",
+        nativeQuery = true)
     Integer getCountFollowings(@Param("followingId") Integer followingId);
 
     /**
@@ -66,7 +66,7 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      * @return The count of users following the specified user.
      */
     @Query(
-            value = "SELECT COUNT(*) FROM usm_social_followers WHERE follower_id = :followerId",
-            nativeQuery = true)
+        value = "SELECT COUNT(*) FROM usm_social_followers WHERE following_id = :followerId",
+        nativeQuery = true)
     Integer getCountFollowers(@Param("followerId") Integer followerId);
 }
