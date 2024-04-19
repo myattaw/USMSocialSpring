@@ -364,6 +364,7 @@ public class PostService {
                                 .content(comment.getContent())
                                 .commenterFirstName(comment.getUser().getFirstName())
                                 .commenterLastName(comment.getUser().getLastName())
+                                .profilePictureBase64(comment.getUser().getBase64ProfilePicture())
                                 .timestamp(comment.getTimestamp())
                                 .build()).collect(Collectors.toCollection(() -> new ArrayList<>(post.getComments().size()))
                         ))
