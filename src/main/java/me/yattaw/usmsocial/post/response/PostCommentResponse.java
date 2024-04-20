@@ -49,4 +49,9 @@ public class PostCommentResponse {
      * The timestamp of the comment.
      */
     private LocalDateTime timestamp;
+
+    /**
+     * Base 64 Encoding of profile picture
+     */
+    private String profilePictureBase64;
 }
