@@ -21,7 +21,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      */
     @Query(
             value = "SELECT COUNT(*) FROM usm_social_followers WHERE following_id = :followingId AND follower_id = :followerId AND follower_id != following_id",
-            nativeQuery = true)
+            nativeQuery = true
+    )
     Integer getUserFollowerEachOtherCount(@Param("followerId") Integer followerId, @Param("followingId") Integer followingId);
 
     /**
@@ -33,7 +34,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      */
     @Query(
         value = "SELECT follower_id FROM usm_social_followers WHERE following_id = :followerId",
-        nativeQuery = true)
+        nativeQuery = true
+    )
     Page<Integer> getUserFollowers(@Param("followerId") Integer followerId, Pageable pageable);
 
     /**
@@ -45,7 +47,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      */
     @Query(
         value = "SELECT following_id FROM usm_social_followers WHERE follower_id = :followingId",
-        nativeQuery = true)
+        nativeQuery = true
+    )
     Page<Integer> getUserFollowings(@Param("followingId") Integer followingId, Pageable pageable);
 
     /**
@@ -56,7 +59,8 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      */
     @Query(
         value = "SELECT COUNT(*) FROM usm_social_followers WHERE follower_id = :followingId",
-        nativeQuery = true)
+        nativeQuery = true
+    )
     Integer getCountFollowings(@Param("followingId") Integer followingId);
 
     /**
@@ -67,6 +71,7 @@ public interface FollowerRepository extends JpaRepository<UserFollowers, UserFol
      */
     @Query(
         value = "SELECT COUNT(*) FROM usm_social_followers WHERE following_id = :followerId",
-        nativeQuery = true)
+        nativeQuery = true
+    )
     Integer getCountFollowers(@Param("followerId") Integer followerId);
 }

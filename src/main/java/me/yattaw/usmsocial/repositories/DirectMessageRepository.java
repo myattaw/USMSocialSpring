@@ -24,16 +24,6 @@ public interface DirectMessageRepository extends JpaRepository<DirectMessage, In
     List<User> findUsersWithMessagesFromUser(User user);
 
     /**
-     * Retrieves the last message exchanged between two users.
-     *
-     * @param user1 The first user.
-     * @param user2 The second user.
-     * @return Optional containing the last message between the two users, if any.
-     */
-    @Query("SELECT dm FROM DirectMessage dm WHERE (dm.sender = :user1 AND dm.receiver = :user2) OR (dm.sender = :user2 AND dm.receiver = :user1) ORDER BY dm.timestamp DESC")
-    Optional<DirectMessage> findLastMessageBetweenUsers(User user1, User user2);
-
-    /**
      * Retrieves a list of messages exchanged between two users.
      *
      * @param user1    The first user.

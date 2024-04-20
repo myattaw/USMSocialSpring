@@ -11,6 +11,7 @@ import me.yattaw.usmsocial.repositories.DirectMessageRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -120,7 +121,11 @@ public class MessageService {
         List<User> users = dmRepository.findUsersWithMessagesFromUser(user.get());
         List<RecentMessageInfo> recentMessages = new ArrayList<>();
         users.forEach(messageUser -> {
-            Optional<DirectMessage> message = dmRepository.findLastMessageBetweenUsers(user.get(), messageUser);
+            Optional<List<DirectMessage>> message = dmRepository.findMessagesBetweenUsers(
+                    user.get(),
+                    messageUser,
+                    Pageable.ofSize(1)
+            );
             message.ifPresent(dm -> recentMessages.add(
                     RecentMessageInfo.builder()
                             .userId(messageUser.getId())
@@ -128,12 +133,12 @@ public class MessageService {
                             .lastName(messageUser.getLastName())
                             .tagLine(messageUser.getTagLine())
                             .base64Image(messageUser.getBase64ProfilePicture())
-                            .lastMessage(dm.getMessage())
+                            .lastMessage(dm.get(0).getMessage())
                             .lastSenderFullName(
-                                    dm.getSender().getFirstName() + " " + dm.getSender().getLastName()
+                                    dm.get(0).getSender().getFirstName() + " " + dm.get(0).getSender().getLastName()
                             )
-                            .lastSenderId(dm.getSender().getId())
-                            .timestamp(dm.getTimestamp())
+                            .lastSenderId(dm.get(0).getSender().getId())
+                            .timestamp(dm.get(0).getTimestamp())
                             .build()
             ));
         });
