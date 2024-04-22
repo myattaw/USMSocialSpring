@@ -11,13 +11,13 @@ import me.yattaw.usmsocial.repositories.DirectMessageRepository;
 import me.yattaw.usmsocial.repositories.UserRepository;
 import me.yattaw.usmsocial.service.JwtService;
 import me.yattaw.usmsocial.user.responses.UserActionResponse;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 /**
@@ -103,8 +103,8 @@ public class MessageService {
      *
      * @param request The servlet request containing the JWT token.
      * @return List of RecentMessageInfo representing recent messages.
-     */
-    public List<RecentMessageInfo> getRecentMessages(HttpServletRequest request) {
+     */ 
+        public List<RecentMessageInfo> getRecentMessages(HttpServletRequest request) {
 
         String token = jwtService.extractToken(request);
 
@@ -118,7 +118,15 @@ public class MessageService {
         }
 
 
-        List<User> users = dmRepository.findUsersWithMessagesFromUser(user.get());
+        List<User> usersSent = dmRepository.findUsersWithMessagesToUser(user.get());
+        List<User> usersFrom = dmRepository.findUsersWithMessagesFromUser(user.get());
+        List<User> users = new ArrayList<>();
+        users.addAll(usersSent);
+        for (User userFrom : usersFrom) {
+                if (!users.contains(userFrom)) {
+                        users.add(userFrom);
+                }
+        }
         List<RecentMessageInfo> recentMessages = new ArrayList<>();
         users.forEach(messageUser -> {
             Optional<List<DirectMessage>> message = dmRepository.findMessagesBetweenUsers(
@@ -141,6 +149,11 @@ public class MessageService {
                             .timestamp(dm.get(0).getTimestamp())
                             .build()
             ));
+        });
+        recentMessages.sort(new Comparator<RecentMessageInfo>() {
+                public int compare(RecentMessageInfo o1, RecentMessageInfo o2) {
+                        return o1.getTimestamp().compareTo(o2.getTimestamp());
+                }
         });
         return recentMessages;
     }
