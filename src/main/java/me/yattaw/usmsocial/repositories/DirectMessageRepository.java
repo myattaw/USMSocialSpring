@@ -15,13 +15,22 @@ import java.util.Optional;
 public interface DirectMessageRepository extends JpaRepository<DirectMessage, Integer> {
 
     /**
+     * Retrieves a list of users who have sent messages from a specific user.
+     *
+     * @param user The user whose messages are being queried.
+     * @return A list of users who have sent messages from the specified user.
+     */
+    @Query("SELECT dm.receiver FROM DirectMessage dm WHERE dm.sender = :user")
+    List<User> findUsersWithMessagesFromUser(User user);
+
+    /**
      * Retrieves a list of users who have received messages from a specific user.
      *
      * @param user The user whose messages are being queried.
      * @return A list of users who have received messages from the specified user.
      */
-    @Query("SELECT dm.receiver FROM DirectMessage dm WHERE dm.sender = :user")
-    List<User> findUsersWithMessagesFromUser(User user);
+    @Query("SELECT dm.sender FROM DirectMessage dm WHERE dm.receiver = :user")
+    List<User> findUsersWithMessagesToUser(User user);
 
     /**
      * Retrieves a list of messages exchanged between two users.

@@ -178,4 +178,23 @@ public class User implements UserDetails {
         }
     }
 
+    /**
+     * Check if two User objects are the same based on the id.
+     *
+     * @return If object equals.
+     */
+    @Override
+    public boolean equals(Object object)
+    {
+        if (this == object) {
+            return true;
+        }
+
+        if (object != null && object instanceof User)
+        {
+            return this.id == ((User) object).id;
+        }
+
+        return false;
+    }
 }
